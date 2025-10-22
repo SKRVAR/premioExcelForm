@@ -32,7 +32,107 @@ forms/
 ├── form.html                      # Formulario de postulación (público)
 ├── admin.html                     # Panel administrativo (requiere autenticación)
 ├── INSTRUCCIONES_FIREBASE.md      # Guía completa de configuración
-└── README.md                      # Este archivo
+# 📋 Formulario Premio Excelencia UNCP 2025
+
+Sistema completo de formulario web para postulaciones al Premio a la Excelencia Científica UNCP, implementado con **Google Apps Script**.
+
+## 🌟 Características
+
+✅ Formulario web personalizado y elegante  
+✅ Búsqueda automática de metadatos DOI (CrossRef API)  
+✅ Almacenamiento de archivos PDF en Google Drive  
+✅ Registro de datos en Google Sheets  
+✅ Email automático de confirmación  
+✅ **100% Gratuito** - Sin costos de hosting ni base de datos  
+
+## 🚀 Demo en Vivo
+
+**Formulario:** [https://skrvar.github.io/premioExcelForm/form_google_apps_script.html](https://skrvar.github.io/premioExcelForm/form_google_apps_script.html)
+
+## 📦 Archivos Principales
+
+- **`form_google_apps_script.html`** - Formulario web completo (usar este)
+- **`google-apps-script/Code.gs`** - Backend de Google Apps Script
+- **`INSTRUCCIONES_GOOGLE_APPS_SCRIPT.md`** - Guía completa de instalación
+
+## ⚙️ Instalación Rápida
+
+### 1. Configurar Google Apps Script (Backend)
+
+1. Ve a [script.google.com](https://script.google.com/)
+2. Crea un nuevo proyecto
+3. Copia el contenido de `google-apps-script/Code.gs`
+4. Ejecuta la función `inicializarProyecto()`
+5. Publica como Web App
+6. Copia la URL del Web App
+
+### 2. Configurar el Formulario
+
+1. Abre `form_google_apps_script.html`
+2. Reemplaza `GOOGLE_SCRIPT_URL` con tu URL del Web App
+3. ¡Listo para usar!
+
+## 📖 Documentación Completa
+
+Lee el archivo **[INSTRUCCIONES_GOOGLE_APPS_SCRIPT.md](./INSTRUCCIONES_GOOGLE_APPS_SCRIPT.md)** para instrucciones paso a paso detalladas.
+
+## 🛠️ Tecnologías
+
+- HTML5 + JavaScript
+- [Tailwind CSS](https://tailwindcss.com/) - Diseño responsive
+- [CrossRef API](https://www.crossref.org/) - Metadatos de publicaciones
+- [Google Apps Script](https://developers.google.com/apps-script) - Backend
+- [Google Drive](https://drive.google.com/) - Almacenamiento de archivos
+- [Google Sheets](https://sheets.google.com/) - Base de datos
+
+## 📊 Estructura de Datos
+
+Los datos se guardan automáticamente en Google Sheets con las siguientes columnas:
+
+| Campo | Descripción |
+|-------|-------------|
+| Fecha Postulación | Timestamp automático |
+| Nombres | Nombre del postulante |
+| Apellidos | Apellidos del postulante |
+| Email | Correo institucional |
+| Facultad | Facultad del postulante |
+| Escuela | Escuela profesional |
+| Teléfono | Número de contacto |
+| DOI | Identificador de la publicación |
+| Título Artículo | Título de la publicación |
+| Autores | Lista de autores (JSON) |
+| Revista | Nombre de la revista |
+| Editorial | Editorial de la publicación |
+| Fecha Publicación | Fecha de publicación |
+| URL PDF | Enlace al archivo en Drive |
+| Estado | Estado de la postulación |
+
+## 🔒 Seguridad
+
+- Los archivos se almacenan en Google Drive del administrador
+- Solo personas con el enlace pueden acceder a los PDFs
+- Los datos en Google Sheets son privados por defecto
+- HTTPS automático en GitHub Pages
+
+## 📝 Licencia
+
+MIT License - Libre para uso académico y comercial
+
+## 👥 Autor
+
+Desarrollado para la Universidad Nacional del Centro del Perú (UNCP)
+
+## 🆘 Soporte
+
+Si tienes problemas:
+1. Revisa las [instrucciones completas](./INSTRUCCIONES_GOOGLE_APPS_SCRIPT.md)
+2. Verifica los logs en Google Apps Script
+3. Abre la consola del navegador (F12) para ver errores
+
+---
+
+**Universidad Nacional del Centro del Perú**  
+*Vicerrectorado de Investigación*
 ```
 
 ## 🛠️ Tecnologías Utilizadas

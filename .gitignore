@@ -1,0 +1,11 @@
+# Archivos temporales
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Configuración local
+.vscode/settings.json
+
+# Node modules (si usas npm)
+node_modules/
