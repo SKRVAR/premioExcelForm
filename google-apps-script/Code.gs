@@ -34,16 +34,16 @@ function inicializarProyecto() {
     'Apellidos',
     'Email',
     'Facultad',
-    'Escuela',
     'Teléfono',
     'DOI',
     'Título Artículo',
-    'Autores',
+    'Autores del Artículo',
+    'Autores UNCP',
+    'Autores Externos',
     'Revista',
     'Editorial',
     'Fecha Publicación',
-    'URL PDF',
-    'Nombre Archivo',
+    'URLs PDFs Verificación',
     'Estado',
     'ID Carpeta Drive'
   ];
@@ -95,6 +95,8 @@ function doPost(e) {
       return handleFormSubmission(data);
     } else if (data.action === 'uploadFile') {
       return handleFileUpload(data);
+    } else if (data.action === 'checkDuplicate') {
+      return checkDuplicateDOI(data);
     }
     
     return createResponse(false, 'Acción no válida');
@@ -116,6 +118,66 @@ function doGet(e) {
       timestamp: new Date().toISOString()
     })
   ).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ============================================
+// VALIDACIÓN DE DUPLICADOS
+// ============================================
+
+/**
+ * Verifica si un DOI ya ha sido registrado previamente
+ */
+function checkDuplicateDOI(data) {
+  try {
+    const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+    const ss = SpreadsheetApp.openById(sheetId);
+    const sheet = ss.getActiveSheet();
+    
+    const doi = data.doi;
+    const titulo = data.titulo;
+    
+    // Obtener todos los datos de la hoja
+    const dataRange = sheet.getDataRange();
+    const values = dataRange.getValues();
+    
+    // Buscar DOI duplicado (columna 7 = índice 6)
+    // Empezar desde la fila 2 (índice 1) para saltar encabezados
+    for (let i = 1; i < values.length; i++) {
+      const rowDOI = values[i][6]; // Columna DOI
+      const rowTitulo = values[i][7]; // Columna Título
+      
+      // Verificar si el DOI coincide o el título es muy similar
+      if (rowDOI && (rowDOI.toLowerCase() === doi.toLowerCase() || 
+          (rowTitulo && rowTitulo.toLowerCase() === titulo.toLowerCase()))) {
+        
+        // Encontrado duplicado - devolver datos del postulante previo
+        return createResponse(false, 'Este artículo ya ha sido postulado', {
+          isDuplicate: true,
+          postulacionPrevia: {
+            fecha: values[i][0], // Fecha postulación
+            nombres: values[i][1],
+            apellidos: values[i][2],
+            email: values[i][3],
+            facultad: values[i][4],
+            telefono: values[i][5],
+            doi: values[i][6],
+            titulo: values[i][7],
+            autoresUNCP: values[i][9],
+            estado: values[i][15]
+          }
+        });
+      }
+    }
+    
+    // No se encontró duplicado
+    return createResponse(true, 'DOI disponible para postular', {
+      isDuplicate: false
+    });
+    
+  } catch (error) {
+    Logger.log('Error al verificar duplicado: ' + error.toString());
+    return createResponse(false, 'Error al verificar duplicado: ' + error.toString());
+  }
 }
 
 // ============================================
@@ -158,9 +220,12 @@ function handleFileUpload(data) {
 /**
  * Guarda el PDF recibido como Base64
  */
-function guardarPDF(base64Data, fileName) {
-  const folderId = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
-  const folder = DriveApp.getFolderById(folderId);
+function guardarPDF(base64Data, fileName, carpeta = null) {
+  // Si no se especifica carpeta, usar la principal
+  if (!carpeta) {
+    const folderId = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
+    carpeta = DriveApp.getFolderById(folderId);
+  }
   
   // Decodificar Base64 y crear archivo
   const fileBlob = Utilities.newBlob(
@@ -169,7 +234,7 @@ function guardarPDF(base64Data, fileName) {
     fileName
   );
   
-  const file = folder.createFile(fileBlob);
+  const file = carpeta.createFile(fileBlob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   
   return {
@@ -188,13 +253,41 @@ function guardarPDF(base64Data, fileName) {
  */
 function handleFormSubmission(data) {
   try {
-    // 1. Guardar PDF
-    const pdfInfo = guardarPDF(data.pdfBase64, data.pdfFileName);
+    const folderId = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
+    const carpetaPrincipal = DriveApp.getFolderById(folderId);
     
-    // 2. Guardar datos en Google Sheets
+    // 1. Crear subcarpeta para esta postulación
+    const nombreCarpeta = `${data.apellidos}_${data.nombres}_${new Date().getTime()}`;
+    const subcarpeta = carpetaPrincipal.createFolder(nombreCarpeta);
+    
+    // 2. Guardar PDFs de los autores UNCP
+    const autoresUNCP = [];
+    const autoresExternos = [];
+    const pdfsUrls = [];
+    
+    data.publicacion.autores.forEach((autor, index) => {
+      if (autor.afiliacion === 'UNCP') {
+        autoresUNCP.push(autor.nombre);
+        
+        // Guardar PDF de verificación
+        if (autor.pdfVerificacion) {
+          const pdfInfo = guardarPDF(autor.pdfVerificacion, autor.pdfFileName, subcarpeta);
+          pdfsUrls.push(`${autor.nombre}: ${pdfInfo.fileUrl}`);
+        }
+      } else {
+        autoresExternos.push(autor.nombre);
+      }
+    });
+    
+    // 3. Guardar datos en Google Sheets
     const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     const ss = SpreadsheetApp.openById(sheetId);
     const sheet = ss.getActiveSheet();
+    
+    // Preparar listado de todos los autores
+    const todosAutores = data.publicacion.autores.map(a => 
+      `${a.nombre} (${a.afiliacion})`
+    ).join('; ');
     
     // Preparar datos para la fila
     const rowData = [
@@ -203,29 +296,31 @@ function handleFormSubmission(data) {
       data.apellidos,
       data.email,
       data.facultad,
-      data.escuela,
       data.telefono,
       data.publicacion.doi,
       data.publicacion.titulo,
-      JSON.stringify(data.publicacion.autores), // Convertir array a string
+      todosAutores, // Todos los autores con su afiliación
+      autoresUNCP.join('; '), // Solo autores UNCP
+      autoresExternos.join('; '), // Solo autores externos
       data.publicacion.revista,
       data.publicacion.editorial,
       data.publicacion.fecha,
-      pdfInfo.fileUrl,
-      pdfInfo.fileName,
+      pdfsUrls.join('\n'), // URLs de PDFs de verificación
       'Pendiente', // Estado inicial
-      PropertiesService.getScriptProperties().getProperty('FOLDER_ID')
+      subcarpeta.getId()
     ];
     
     // Añadir fila
     sheet.appendRow(rowData);
     
-    // 3. Enviar email de confirmación (opcional)
-    enviarEmailConfirmacion(data.email, data.nombres, data.apellidos);
+    // 4. Enviar email de confirmación
+    enviarEmailConfirmacion(data.email, data.nombres, data.apellidos, autoresUNCP.length);
     
     return createResponse(true, 'Postulación enviada correctamente', {
-      pdfUrl: pdfInfo.fileUrl,
-      rowNumber: sheet.getLastRow()
+      carpetaUrl: subcarpeta.getUrl(),
+      rowNumber: sheet.getLastRow(),
+      autoresUNCP: autoresUNCP.length,
+      autoresExternos: autoresExternos.length
     });
     
   } catch (error) {
@@ -241,7 +336,7 @@ function handleFormSubmission(data) {
 /**
  * Envía un email de confirmación al postulante
  */
-function enviarEmailConfirmacion(email, nombres, apellidos) {
+function enviarEmailConfirmacion(email, nombres, apellidos, numAutoresUNCP) {
   try {
     const subject = 'Confirmación de Postulación - Premio Excelencia UNCP 2025';
     const body = `
@@ -250,6 +345,7 @@ Estimado/a ${nombres} ${apellidos},
 Su postulación al II Premio a la Excelencia Científica UNCP-2025 ha sido recibida exitosamente.
 
 Fecha de recepción: ${new Date().toLocaleString('es-PE')}
+Número de autores con afiliación UNCP: ${numAutoresUNCP}
 
 El comité evaluador revisará su postulación y le comunicaremos los resultados oportunamente.
 

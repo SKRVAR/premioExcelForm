@@ -80,41 +80,18 @@
                 </div>
 
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">Email institucional *</label>
+                    <label class="block font-medium text-gray-700 mb-1">Email *</label>
                     <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="ejemplo@uncp.edu.pe">
                 </div>
 
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Facultad *</label>
-                    <input type="text" id="facultad" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Escuela Profesional *</label>
-                    <input type="text" id="escuela" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label class="block font-medium text-gray-700 mb-1">Teléfono / Celular *</label>
-                    <input type="tel" id="telefono" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                </div>
-
-                <!-- CARGA DE PDF -->
-                <div class="border-t pt-4 mt-4">
-                    <label class="block font-medium text-gray-700 mb-2">Cargar artículo completo (PDF) *</label>
-                    <input 
-                        type="file" 
-                        id="pdfFile" 
-                        accept=".pdf" 
-                        required 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    >
-                    <p class="text-sm text-gray-500 mt-1">Máximo 10 MB</p>
-                    <div id="uploadProgress" class="hidden mt-2">
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
-                        </div>
-                        <p id="progressText" class="text-sm text-gray-600 mt-1">Preparando...</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Facultad *</label>
+                        <input type="text" id="facultad" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Teléfono Celular *</label>
+                        <input type="tel" id="telefono" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="999999999">
                     </div>
                 </div>
 
@@ -127,24 +104,62 @@
                 <input type="hidden" id="publicacionFecha">
                 <input type="hidden" id="publicacionMetadatos">
 
-                <!-- Botón de envío -->
-                <div class="flex gap-3 pt-4">
+                <!-- Botones de navegación -->
+                <div class="flex gap-3 pt-6">
                     <button 
                         type="button"
                         onclick="volverBusqueda()"
                         class="flex-1 bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-600 transition"
                     >
-                        Volver
+                        Volver a Búsqueda
                     </button>
                     <button 
-                        type="submit"
-                        id="btnEnviar"
-                        class="flex-1 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition"
+                        type="button"
+                        onclick="continuarAutores()"
+                        class="flex-1 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
                     >
-                        Enviar Postulación
+                        Continuar →
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- SECCIÓN 3: Autores del Artículo (oculta inicialmente) -->
+        <div id="seccionAutores" class="hidden mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-t pt-6">3. Autores del Artículo</h2>
+            <p class="text-gray-600 mb-4">Para cada autor, indique si su afiliación declarada en el artículo pertenece a la UNCP. Los autores con afiliación UNCP deben adjuntar un documento que verifique su vínculo con la universidad.</p>
+            
+            <div id="listaAutores" class="space-y-4">
+                <!-- Los autores se generarán dinámicamente aquí -->
+            </div>
+
+            <div id="uploadProgress" class="hidden mt-4">
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+                <p id="progressText" class="text-sm text-gray-600 mt-1">Preparando...</p>
+            </div>
+        </div>
+
+        <!-- BOTÓN DE ENVÍO FINAL -->
+        <div id="seccionEnvio" class="hidden mb-8">
+            <div class="flex gap-3 pt-4 border-t">
+                <button 
+                    type="button"
+                    onclick="volverDatosPostulante()"
+                    class="flex-1 bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-600 transition"
+                >
+                    ← Volver
+                </button>
+                <button 
+                    type="button"
+                    onclick="enviarPostulacion()"
+                    id="btnEnviar"
+                    class="flex-1 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition"
+                >
+                    Enviar Postulación
+                </button>
+            </div>
         </div>
 
         <!-- Mensaje de éxito -->
@@ -164,6 +179,7 @@
     <script>
         // Variable global para almacenar los metadatos completos
         let metadatosPublicacion = null;
+        let autoresArticulo = [];
 
         /**
          * Formatea un valor para mostrarlo en la tabla
@@ -228,6 +244,122 @@
             return tableHtml;
         }
 
+        /**
+         * Genera la lista de autores con campos de afiliación y PDF
+         */
+        function generarListaAutores() {
+            const listaAutoresDiv = document.getElementById('listaAutores');
+            let html = '';
+
+            autoresArticulo.forEach((autor, index) => {
+                const nombreCompleto = `${autor.given || ''} ${autor.family || ''}`.trim() || 'Autor sin nombre';
+                
+                html += `
+                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                                ${index + 1}
+                            </div>
+                            <div class="flex-grow">
+                                <h3 class="font-semibold text-gray-800 mb-3">${nombreCompleto}</h3>
+                                
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Afiliación declarada en el artículo *</label>
+                                        <select 
+                                            id="afiliacion_${index}" 
+                                            onchange="togglePdfUpload(${index})"
+                                            required 
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                        >
+                                            <option value="">Seleccione...</option>
+                                            <option value="UNCP">UNCP (Universidad Nacional del Centro del Perú)</option>
+                                            <option value="EXTERNO">Externo (otra institución)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div id="pdfContainer_${index}" class="hidden">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Documento de verificación de vínculo con UNCP (PDF) *
+                                        </label>
+                                        <input 
+                                            type="file" 
+                                            id="pdfAutor_${index}" 
+                                            accept=".pdf"
+                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        >
+                                        <p class="text-xs text-gray-500 mt-1">Máximo 10 MB. Ej: constancia laboral, resolución, etc.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listaAutoresDiv.innerHTML = html;
+        }
+
+        /**
+         * Muestra/oculta el campo de PDF según la afiliación seleccionada
+         */
+        window.togglePdfUpload = function(index) {
+            const afiliacion = document.getElementById(`afiliacion_${index}`).value;
+            const pdfContainer = document.getElementById(`pdfContainer_${index}`);
+            const pdfInput = document.getElementById(`pdfAutor_${index}`);
+            
+            if (afiliacion === 'UNCP') {
+                pdfContainer.classList.remove('hidden');
+                pdfInput.required = true;
+            } else {
+                pdfContainer.classList.add('hidden');
+                pdfInput.required = false;
+                pdfInput.value = '';
+            }
+        };
+
+        /**
+         * Valida que el postulante sea uno de los autores UNCP
+         */
+        function validarPostulanteEsAutorUNCP() {
+            const nombresPostulante = document.getElementById('nombres').value.trim().toLowerCase();
+            const apellidosPostulante = document.getElementById('apellidos').value.trim().toLowerCase();
+            const emailPostulante = document.getElementById('email').value.trim().toLowerCase();
+            
+            let hayAutorUNCPValido = false;
+            
+            autoresArticulo.forEach((autor, index) => {
+                const afiliacion = document.getElementById(`afiliacion_${index}`).value;
+                
+                if (afiliacion === 'UNCP') {
+                    const nombreAutor = (autor.given || '').toLowerCase();
+                    const apellidoAutor = (autor.family || '').toLowerCase();
+                    
+                    // Verificar si el nombre y apellido coinciden (aproximado)
+                    if (nombreAutor.includes(nombresPostulante) || nombresPostulante.includes(nombreAutor)) {
+                        if (apellidoAutor.includes(apellidosPostulante) || apellidosPostulante.includes(apellidoAutor)) {
+                            hayAutorUNCPValido = true;
+                        }
+                    }
+                }
+            });
+            
+            return hayAutorUNCPValido;
+        }
+
+        /**
+         * Valida que al menos un autor tenga afiliación UNCP
+         */
+        function validarAlMenosUnAutorUNCP() {
+            for (let i = 0; i < autoresArticulo.length; i++) {
+                const afiliacion = document.getElementById(`afiliacion_${i}`).value;
+                if (afiliacion === 'UNCP') {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // Manejo de búsqueda DOI
         document.getElementById('doiForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -265,6 +397,117 @@
                 .then(data => {
                     const metadata = data.message;
                     metadatosPublicacion = metadata;
+                    autoresArticulo = metadata.author || [];
+                    
+                    const titulo = metadata.title ? metadata.title[0] : '';
+                    
+                    // VERIFICAR SI EL DOI YA ESTÁ REGISTRADO
+                    resultadoDiv.innerHTML = `
+                        <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
+                            <p>Verificando disponibilidad del artículo...</p>
+                        </div>`;
+                    
+                    return fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            action: 'checkDuplicate',
+                            doi: doi,
+                            titulo: titulo
+                        }),
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8',
+                        }
+                    });
+                })
+                .then(response => response.json())
+                .then(checkResult => {
+                    if (checkResult.data && checkResult.data.isDuplicate) {
+                        // EL ARTÍCULO YA FUE POSTULADO
+                        const prev = checkResult.data.postulacionPrevia;
+                        const fechaFormateada = new Date(prev.fecha).toLocaleDateString('es-PE', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        resultadoDiv.innerHTML = `
+                            <div class="bg-red-50 p-6 rounded-lg border-2 border-red-300">
+                                <div class="flex items-start gap-3 mb-4">
+                                    <svg class="w-8 h-8 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                    <div class="flex-grow">
+                                        <h3 class="text-xl font-bold text-red-800 mb-2">⚠️ Artículo ya postulado</h3>
+                                        <p class="text-red-700 mb-4">Este artículo ya ha sido registrado en el sistema y no puede ser postulado nuevamente.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg p-4 border border-red-200">
+                                    <h4 class="font-semibold text-gray-800 mb-3">📋 Datos de la postulación previa:</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <span class="font-medium text-gray-600">Fecha de postulación:</span>
+                                            <p class="text-gray-800">${fechaFormateada}</p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Estado:</span>
+                                            <p class="text-gray-800"><span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">${prev.estado || 'Pendiente'}</span></p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Postulante:</span>
+                                            <p class="text-gray-800">${prev.nombres} ${prev.apellidos}</p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Email:</span>
+                                            <p class="text-gray-800">${prev.email}</p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Facultad:</span>
+                                            <p class="text-gray-800">${prev.facultad}</p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Teléfono:</span>
+                                            <p class="text-gray-800">${prev.telefono}</p>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium text-gray-600">DOI:</span>
+                                            <p class="text-gray-800 break-all">${prev.doi}</p>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium text-gray-600">Título:</span>
+                                            <p class="text-gray-800">${prev.titulo}</p>
+                                        </div>
+                                        ${prev.autoresUNCP ? `
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium text-gray-600">Autores UNCP:</span>
+                                            <p class="text-gray-800">${prev.autoresUNCP}</p>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-sm text-blue-800">
+                                        <strong>ℹ️ Nota:</strong> Si cree que esto es un error o necesita actualizar la postulación, 
+                                        por favor contacte al administrador del sistema.
+                                    </p>
+                                </div>
+                                
+                                <button 
+                                    onclick="location.reload()"
+                                    class="mt-4 w-full bg-gray-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+                                >
+                                    Buscar otro artículo
+                                </button>
+                            </div>
+                        `;
+                        return; // Detener el flujo
+                    }
+                    
+                    // NO HAY DUPLICADO - CONTINUAR NORMALMENTE
+                    const metadata = metadatosPublicacion;
                     
                     // Guardar datos en campos ocultos
                     document.getElementById('publicacionTitulo').value = metadata.title ? metadata.title[0] : '';
@@ -317,9 +560,33 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
+        window.continuarAutores = function() {
+            // Validar campos del postulante
+            const form = document.getElementById('formularioPostulacion');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Generar lista de autores
+            generarListaAutores();
+            
+            document.getElementById('seccionPostulante').classList.add('hidden');
+            document.getElementById('seccionAutores').classList.remove('hidden');
+            document.getElementById('seccionEnvio').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
         window.volverBusqueda = function() {
             document.getElementById('seccionPostulante').classList.add('hidden');
             document.getElementById('seccionBusqueda').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.volverDatosPostulante = function() {
+            document.getElementById('seccionAutores').classList.add('hidden');
+            document.getElementById('seccionEnvio').classList.add('hidden');
+            document.getElementById('seccionPostulante').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
@@ -332,53 +599,100 @@
                 <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg">
                     <p>Los resultados de la búsqueda aparecerán aquí.</p>
                 </div>`;
+            metadatosPublicacion = null;
+            autoresArticulo = [];
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         // Manejo del envío de postulación
-        document.getElementById('formularioPostulacion').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            
+        window.enviarPostulacion = async function() {
             const btnEnviar = document.getElementById('btnEnviar');
-            btnEnviar.disabled = true;
-            btnEnviar.textContent = 'Enviando...';
-
+            
             try {
-                // 1. Validar PDF
-                const pdfFile = document.getElementById('pdfFile').files[0];
-                if (!pdfFile) throw new Error('Debe seleccionar un archivo PDF');
-                if (pdfFile.size > 10 * 1024 * 1024) throw new Error('El archivo no debe superar 10 MB');
-
-                // 2. Convertir PDF a Base64
+                // Validar que todos los autores tengan afiliación seleccionada
+                for (let i = 0; i < autoresArticulo.length; i++) {
+                    const afiliacion = document.getElementById(`afiliacion_${i}`).value;
+                    if (!afiliacion) {
+                        alert(`Por favor, seleccione la afiliación para el autor ${i + 1}`);
+                        return;
+                    }
+                    
+                    // Si es UNCP, validar que tenga PDF
+                    if (afiliacion === 'UNCP') {
+                        const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
+                        if (!pdfFile) {
+                            alert(`Por favor, cargue el documento de verificación para el autor ${i + 1} (UNCP)`);
+                            return;
+                        }
+                        if (pdfFile.size > 10 * 1024 * 1024) {
+                            alert(`El PDF del autor ${i + 1} no debe superar 10 MB`);
+                            return;
+                        }
+                    }
+                }
+                
+                // Validar que al menos un autor sea UNCP
+                if (!validarAlMenosUnAutorUNCP()) {
+                    alert('Debe haber al menos un autor con afiliación UNCP');
+                    return;
+                }
+                
+                // Validar que el postulante sea uno de los autores UNCP
+                if (!validarPostulanteEsAutorUNCP()) {
+                    alert('El postulante debe ser uno de los autores con afiliación UNCP declarada en el artículo. Verifique que su nombre coincida con alguno de los autores UNCP seleccionados.');
+                    return;
+                }
+                
+                btnEnviar.disabled = true;
+                btnEnviar.textContent = 'Enviando...';
+                
                 document.getElementById('uploadProgress').classList.remove('hidden');
-                document.getElementById('progressText').textContent = 'Procesando archivo...';
+                document.getElementById('progressText').textContent = 'Procesando archivos...';
                 
-                const pdfBase64 = await fileToBase64(pdfFile);
+                // Recopilar datos de autores con sus PDFs
+                const autoresConDatos = [];
+                for (let i = 0; i < autoresArticulo.length; i++) {
+                    const autor = autoresArticulo[i];
+                    const afiliacion = document.getElementById(`afiliacion_${i}`).value;
+                    
+                    const autorData = {
+                        nombre: `${autor.given || ''} ${autor.family || ''}`.trim(),
+                        afiliacion: afiliacion,
+                        datosOriginales: autor
+                    };
+                    
+                    // Si es UNCP, adjuntar PDF en Base64
+                    if (afiliacion === 'UNCP') {
+                        const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
+                        const pdfBase64 = await fileToBase64(pdfFile);
+                        autorData.pdfVerificacion = pdfBase64.split(',')[1]; // Remover prefijo
+                        autorData.pdfFileName = `autor_${i + 1}_${Date.now()}_${pdfFile.name}`;
+                    }
+                    
+                    autoresConDatos.push(autorData);
+                }
                 
-                // 3. Preparar datos
+                // Preparar datos completos
                 const formData = {
                     action: 'submitForm',
                     nombres: document.getElementById('nombres').value,
                     apellidos: document.getElementById('apellidos').value,
                     email: document.getElementById('email').value,
                     facultad: document.getElementById('facultad').value,
-                    escuela: document.getElementById('escuela').value,
                     telefono: document.getElementById('telefono').value,
                     publicacion: {
                         titulo: document.getElementById('publicacionTitulo').value,
-                        autores: JSON.parse(document.getElementById('publicacionAutores').value || '[]'),
+                        autores: autoresConDatos,
                         doi: document.getElementById('publicacionDOI').value,
                         revista: document.getElementById('publicacionRevista').value,
                         editorial: document.getElementById('publicacionEditorial').value,
                         fecha: document.getElementById('publicacionFecha').value,
                         metadatosCompletos: metadatosPublicacion
-                    },
-                    pdfBase64: pdfBase64.split(',')[1], // Remover prefijo data:application/pdf;base64,
-                    pdfFileName: `${Date.now()}_${pdfFile.name}`
+                    }
                 };
-
-                // 4. Enviar a Google Apps Script
-                document.getElementById('progressText').textContent = 'Enviando datos...';
+                
+                // Enviar a Google Apps Script
+                document.getElementById('progressText').textContent = 'Enviando datos al servidor...';
                 
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -392,7 +706,8 @@
                 
                 if (result.success) {
                     // Mostrar éxito
-                    document.getElementById('seccionPostulante').classList.add('hidden');
+                    document.getElementById('seccionAutores').classList.add('hidden');
+                    document.getElementById('seccionEnvio').classList.add('hidden');
                     document.getElementById('mensajeExito').classList.remove('hidden');
                     document.getElementById('uploadProgress').classList.add('hidden');
                 } else {
@@ -406,7 +721,7 @@
                 btnEnviar.textContent = 'Enviar Postulación';
                 document.getElementById('uploadProgress').classList.add('hidden');
             }
-        });
+        };
 
         /**
          * Convierte un archivo a Base64
