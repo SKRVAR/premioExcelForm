@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Postulaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Panel Administrativo</h1>
+                <p class="text-gray-600">Gestión de postulaciones - Premio Excelencia UNCP</p>
+            </div>
+            <button onclick="cerrarSesion()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                Cerrar Sesión
+            </button>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow p-4">
+                <p class="text-gray-600 text-sm">Total</p>
+                <p id="statTotal" class="text-3xl font-bold text-gray-900">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <p class="text-gray-600 text-sm">Pendientes</p>
+                <p id="statPendiente" class="text-3xl font-bold text-yellow-600">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <p class="text-gray-600 text-sm">Aprobados</p>
+                <p id="statAprobado" class="text-3xl font-bold text-green-600">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <p class="text-gray-600 text-sm">Rechazados</p>
+                <p id="statRechazado" class="text-3xl font-bold text-red-600">0</p>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="bg-white rounded-xl shadow p-4 mb-6 flex flex-wrap gap-4">
+            <select id="filtroEstado" class="px-4 py-2 border rounded-lg">
+                <option value="todos">Todos los estados</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="revisado">Revisados</option>
+                <option value="aprobado">Aprobados</option>
+                <option value="rechazado">Rechazados</option>
+            </select>
+            <input type="text" id="busqueda" placeholder="Buscar por nombre, email o DOI..." class="flex-1 px-4 py-2 border rounded-lg">
+            <button onclick="exportarCSV()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                📊 Exportar CSV
+            </button>
+        </div>
+
+        <!-- Lista de postulaciones -->
+        <div id="listaPostulaciones" class="space-y-4">
+            <div class="text-center text-gray-500 p-8">
+                Cargando postulaciones...
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de detalles -->
+    <div id="modalDetalles" class="modal">
+        <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-2xl font-bold text-gray-900">Detalles de la Postulación</h2>
+                    <button onclick="cerrarModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div id="contenidoModal">
+                    <!-- El contenido se llenará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // ⚠️ TODO: Usar la misma configuración que en form.html
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMwwhvddpRWQQM4V90vlOjDLxdj5-gl3U",
+            authDomain: "premioexcelencia2-82c9f.firebaseapp.com",
+            projectId: "premioexcelencia2-82c9f",
+            storageBucket: "premioexcelencia2-82c9f.firebasestorage.app",
+            messagingSenderId: "858584695755",
+            appId: "1:858584695755:web:bdd4a22c27800abafb6c4e"
+        };        
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let postulacionesData = [];
+        let postulacionesFiltradasCache = [];
+
+        // Verificar autenticación
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                // Mostrar formulario de login
+                mostrarLogin();
+            } else {
+                cargarPostulaciones();
+            }
+        });
+
+        function mostrarLogin() {
+            document.body.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center bg-gray-100">
+                    <div class="bg-white p-8 rounded-xl shadow-lg max-w-md w-full">
+                        <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">Acceso Administrativo</h1>
+                        <form id="loginForm" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Email</label>
+                                <input type="email" id="loginEmail" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Contraseña</label>
+                                <input type="password" id="loginPassword" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-semibold">
+                                Iniciar Sesión
+                            </button>
+                            <p id="errorLogin" class="text-red-600 text-sm text-center hidden"></p>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                const errorElement = document.getElementById('errorLogin');
+
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    location.reload();
+                } catch (error) {
+                    errorElement.textContent = 'Error de autenticación: ' + error.message;
+                    errorElement.classList.remove('hidden');
+                }
+            });
+        }
+
+        function cargarPostulaciones() {
+            const q = query(collection(db, 'postulaciones'), orderBy('fechaPostulacion', 'desc'));
+            
+            onSnapshot(q, (querySnapshot) => {
+                postulacionesData = [];
+                querySnapshot.forEach((doc) => {
+                    postulacionesData.push({ id: doc.id, ...doc.data() });
+                });
+                actualizarEstadisticas();
+                renderizarPostulaciones();
+            });
+        }
+
+        function actualizarEstadisticas() {
+            const stats = {
+                total: postulacionesData.length,
+                pendiente: postulacionesData.filter(p => p.estado === 'pendiente').length,
+                aprobado: postulacionesData.filter(p => p.estado === 'aprobado').length,
+                rechazado: postulacionesData.filter(p => p.estado === 'rechazado').length
+            };
+
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statPendiente').textContent = stats.pendiente;
+            document.getElementById('statAprobado').textContent = stats.aprobado;
+            document.getElementById('statRechazado').textContent = stats.rechazado;
+        }
+
+        function renderizarPostulaciones() {
+            const filtroEstado = document.getElementById('filtroEstado').value;
+            const textoBusqueda = document.getElementById('busqueda').value.toLowerCase();
+            
+            let postulacionesFiltradas = postulacionesData;
+
+            // Filtrar por estado
+            if (filtroEstado !== 'todos') {
+                postulacionesFiltradas = postulacionesFiltradas.filter(p => p.estado === filtroEstado);
+            }
+
+            // Filtrar por búsqueda
+            if (textoBusqueda) {
+                postulacionesFiltradas = postulacionesFiltradas.filter(p => 
+                    p.nombres.toLowerCase().includes(textoBusqueda) ||
+                    p.apellidos.toLowerCase().includes(textoBusqueda) ||
+                    p.email.toLowerCase().includes(textoBusqueda) ||
+                    (p.publicacion?.doi || '').toLowerCase().includes(textoBusqueda)
+                );
+            }
+
+            postulacionesFiltradasCache = postulacionesFiltradas;
+            const contenedor = document.getElementById('listaPostulaciones');
+            
+            if (postulacionesFiltradas.length === 0) {
+                contenedor.innerHTML = '<div class="text-center text-gray-500 p-8 bg-white rounded-lg">No hay postulaciones que coincidan con los filtros</div>';
+                return;
+            }
+
+            contenedor.innerHTML = postulacionesFiltradas.map(post => {
+                const fecha = post.fechaPostulacion?.toDate().toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) || 'N/A';
+                const autores = Array.isArray(post.publicacion?.autores) 
+                    ? post.publicacion.autores.map(a => `${a.given || ''} ${a.family || ''}`).join(', ')
+                    : 'N/A';
+
+                return `
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold text-gray-900 mb-2">${post.publicacion?.titulo || 'Sin título'}</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                                    <p><strong>Postulante:</strong> ${post.nombres} ${post.apellidos}</p>
+                                    <p><strong>Email:</strong> ${post.email}</p>
+                                    <p><strong>Facultad:</strong> ${post.facultad}</p>
+                                    <p><strong>Escuela:</strong> ${post.escuela}</p>
+                                    <p><strong>Teléfono:</strong> ${post.telefono}</p>
+                                    <p><strong>Fecha:</strong> ${fecha}</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold ${getEstadoColor(post.estado)}">
+                                ${post.estado.toUpperCase()}
+                            </span>
+                        </div>
+                        
+                        <div class="border-t pt-4 mb-4">
+                            <p class="text-sm text-gray-700 mb-1"><strong>Autores:</strong> ${autores}</p>
+                            <p class="text-sm text-gray-700 mb-1"><strong>Revista:</strong> ${post.publicacion?.revista || 'N/A'}</p>
+                            <p class="text-sm text-gray-700"><strong>DOI:</strong> 
+                                <a href="https://doi.org/${post.publicacion?.doi}" target="_blank" class="text-blue-600 hover:underline">
+                                    ${post.publicacion?.doi || 'N/A'}
+                                </a>
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2">
+                            <a href="${post.pdfURL}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                                📄 Ver PDF
+                            </a>
+                            <button onclick="verDetalles('${post.id}')" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 text-sm">
+                                🔍 Ver Detalles
+                            </button>
+                            <select onchange="cambiarEstado('${post.id}', this.value)" class="px-4 py-2 border rounded-lg text-sm">
+                                <option value="">Cambiar estado...</option>
+                                <option value="revisado">✓ Revisado</option>
+                                <option value="aprobado">✅ Aprobado</option>
+                                <option value="rechazado">❌ Rechazado</option>
+                                <option value="pendiente">⏳ Pendiente</option>
+                            </select>
+                            <button onclick="eliminarPostulacion('${post.id}', '${post.nombres} ${post.apellidos}')" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getEstadoColor(estado) {
+            const colores = {
+                'pendiente': 'bg-yellow-100 text-yellow-800',
+                'revisado': 'bg-blue-100 text-blue-800',
+                'aprobado': 'bg-green-100 text-green-800',
+                'rechazado': 'bg-red-100 text-red-800'
+            };
+            return colores[estado] || 'bg-gray-100 text-gray-800';
+        }
+
+        window.cambiarEstado = async function(postulacionId, nuevoEstado) {
+            if (!nuevoEstado) return;
+            if (!confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) return;
+            
+            try {
+                await updateDoc(doc(db, 'postulaciones', postulacionId), {
+                    estado: nuevoEstado,
+                    fechaActualizacion: new Date()
+                });
+                alert('Estado actualizado correctamente');
+            } catch (error) {
+                alert('Error al actualizar: ' + error.message);
+            }
+        };
+
+        window.eliminarPostulacion = async function(postulacionId, nombrePostulante) {
+            if (!confirm(`¿Está seguro de eliminar la postulación de ${nombrePostulante}? Esta acción no se puede deshacer.`)) return;
+            
+            try {
+                await deleteDoc(doc(db, 'postulaciones', postulacionId));
+                alert('Postulación eliminada correctamente');
+            } catch (error) {
+                alert('Error al eliminar: ' + error.message);
+            }
+        };
+
+        window.verDetalles = function(postulacionId) {
+            const post = postulacionesData.find(p => p.id === postulacionId);
+            if (!post) return;
+
+            const fecha = post.fechaPostulacion?.toDate().toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) || 'N/A';
+
+            const autoresDetalle = Array.isArray(post.publicacion?.autores)
+                ? post.publicacion.autores.map(a => `
+                    <li class="mb-2">
+                        <strong>${a.given || ''} ${a.family || ''}</strong>
+                        ${a.ORCID ? `<br><span class="text-sm text-gray-600">ORCID: ${a.ORCID}</span>` : ''}
+                        ${a.affiliation ? `<br><span class="text-sm text-gray-600">${a.affiliation.map(aff => aff.name).join(', ')}</span>` : ''}
+                    </li>
+                `).join('')
+                : '<li>No disponible</li>';
+
+            document.getElementById('contenidoModal').innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg mb-2">Información del Postulante</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><strong>Nombres:</strong> ${post.nombres}</div>
+                            <div><strong>Apellidos:</strong> ${post.apellidos}</div>
+                            <div><strong>Email:</strong> ${post.email}</div>
+                            <div><strong>Teléfono:</strong> ${post.telefono}</div>
+                            <div><strong>Facultad:</strong> ${post.facultad}</div>
+                            <div><strong>Escuela:</strong> ${post.escuela}</div>
+                            <div><strong>Fecha postulación:</strong> ${fecha}</div>
+                            <div><strong>Estado:</strong> <span class="px-2 py-1 rounded ${getEstadoColor(post.estado)}">${post.estado}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg mb-2">Información de la Publicación</h3>
+                        <p class="mb-2"><strong>Título:</strong> ${post.publicacion?.titulo || 'N/A'}</p>
+                        <p class="mb-2"><strong>DOI:</strong> <a href="https://doi.org/${post.publicacion?.doi}" target="_blank" class="text-blue-600 hover:underline">${post.publicacion?.doi || 'N/A'}</a></p>
+                        <p class="mb-2"><strong>Revista:</strong> ${post.publicacion?.revista || 'N/A'}</p>
+                        <p class="mb-2"><strong>Editorial:</strong> ${post.publicacion?.editorial || 'N/A'}</p>
+                        
+                        <h4 class="font-semibold mt-4 mb-2">Autores:</h4>
+                        <ul class="list-disc list-inside">${autoresDetalle}</ul>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-lg mb-2">Archivo PDF</h3>
+                        <p class="mb-2"><strong>Nombre:</strong> ${post.pdfNombre}</p>
+                        <a href="${post.pdfURL}" target="_blank" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                            📄 Descargar / Ver PDF
+                        </a>
+                    </div>
+
+                    ${post.publicacion?.metadatosCompletos ? `
+                        <details class="bg-gray-50 p-4 rounded-lg">
+                            <summary class="font-bold cursor-pointer">Ver metadatos completos de CrossRef</summary>
+                            <pre class="mt-4 text-xs overflow-auto max-h-96 bg-white p-4 rounded">${JSON.stringify(post.publicacion.metadatosCompletos, null, 2)}</pre>
+                        </details>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('modalDetalles').classList.add('show');
+        };
+
+        window.cerrarModal = function() {
+            document.getElementById('modalDetalles').classList.remove('show');
+        };
+
+        window.exportarCSV = function() {
+            const datos = postulacionesFiltradasCache.length > 0 ? postulacionesFiltradasCache : postulacionesData;
+            
+            const csv = [
+                'Fecha,Nombres,Apellidos,Email,Telefono,Facultad,Escuela,Titulo,DOI,Revista,Editorial,Estado,URL_PDF'
+            ].concat(
+                datos.map(p => {
+                    const fecha = p.fechaPostulacion?.toDate().toLocaleDateString('es-ES') || '';
+                    return `"${fecha}","${p.nombres}","${p.apellidos}","${p.email}","${p.telefono}","${p.facultad}","${p.escuela}","${p.publicacion?.titulo || ''}","${p.publicacion?.doi || ''}","${p.publicacion?.revista || ''}","${p.publicacion?.editorial || ''}","${p.estado}","${p.pdfURL}"`;
+                })
+            ).join('\n');
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `postulaciones_premio_excelencia_${Date.now()}.csv`;
+            link.click();
+        };
+
+        window.cerrarSesion = async function() {
+            if (!confirm('¿Cerrar sesión?')) return;
+            try {
+                await signOut(auth);
+                location.reload();
+            } catch (error) {
+                alert('Error al cerrar sesión: ' + error.message);
+            }
+        };
+
+        // Event listeners
+        document.getElementById('filtroEstado').addEventListener('change', renderizarPostulaciones);
+        document.getElementById('busqueda').addEventListener('input', renderizarPostulaciones);
+    </script>
+
+</body>
+</html>

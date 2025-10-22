@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postulación Premio Excelencia - UNCP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+        
+        <!-- Encabezado -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Premio Excelencia UNCP</h1>
+            <p class="text-gray-600 mt-2">Formulario de Postulación</p>
+        </div>
+
+        <!-- CONFIGURACIÓN: Cambiar por tu URL del Web App -->
+        <script>
+            // ⚠️ IMPORTANTE: Reemplaza esta URL con la de tu Google Apps Script Web App
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyp_jsEExL8tpwKsLG9g8LnvcYq5mD_FdesKLGZy8NxQGLpNIyUY_IH6gH3yBZ3ywSK-w/exec';
+        </script>
+
+        <!-- SECCIÓN 1: Búsqueda de publicación -->
+        <div id="seccionBusqueda" class="mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">1. Datos de la Publicación</h2>
+            
+            <form id="doiForm" class="flex flex-col sm:flex-row gap-3 mb-6">
+                <input 
+                    type="text" 
+                    id="doiInput" 
+                    placeholder="Ej: 10.1038/s41586-021-03590-y" 
+                    class="flex-grow w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-200" 
+                    required
+                >
+                <button 
+                    type="submit" 
+                    class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform duration-200 transform hover:scale-105"
+                >
+                    Obtener Metadatos
+                </button>
+            </form>
+
+            <!-- Contenedor de Resultados -->
+            <div id="resultado" class="mt-6 space-y-4">
+                <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg">
+                    <p>Los resultados de la búsqueda aparecerán aquí.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: Datos del postulante (oculta inicialmente) -->
+        <div id="seccionPostulante" class="hidden mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-t pt-6">2. Datos del Postulante</h2>
+            
+            <form id="formularioPostulacion" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Nombres *</label>
+                        <input type="text" id="nombres" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Apellidos *</label>
+                        <input type="text" id="apellidos" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Email institucional *</label>
+                    <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="ejemplo@uncp.edu.pe">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Facultad *</label>
+                    <input type="text" id="facultad" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Escuela Profesional *</label>
+                    <input type="text" id="escuela" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Teléfono / Celular *</label>
+                    <input type="tel" id="telefono" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- CARGA DE PDF -->
+                <div class="border-t pt-4 mt-4">
+                    <label class="block font-medium text-gray-700 mb-2">Cargar artículo completo (PDF) *</label>
+                    <input 
+                        type="file" 
+                        id="pdfFile" 
+                        accept=".pdf" 
+                        required 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    >
+                    <p class="text-sm text-gray-500 mt-1">Máximo 10 MB</p>
+                    <div id="uploadProgress" class="hidden mt-2">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p id="progressText" class="text-sm text-gray-600 mt-1">Preparando...</p>
+                    </div>
+                </div>
+
+                <!-- Campos ocultos para datos de la publicación -->
+                <input type="hidden" id="publicacionTitulo">
+                <input type="hidden" id="publicacionAutores">
+                <input type="hidden" id="publicacionDOI">
+                <input type="hidden" id="publicacionRevista">
+                <input type="hidden" id="publicacionEditorial">
+                <input type="hidden" id="publicacionFecha">
+                <input type="hidden" id="publicacionMetadatos">
+
+                <!-- Botón de envío -->
+                <div class="flex gap-3 pt-4">
+                    <button 
+                        type="button"
+                        onclick="volverBusqueda()"
+                        class="flex-1 bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-600 transition"
+                    >
+                        Volver
+                    </button>
+                    <button 
+                        type="submit"
+                        id="btnEnviar"
+                        class="flex-1 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition"
+                    >
+                        Enviar Postulación
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Mensaje de éxito -->
+        <div id="mensajeExito" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mt-6">
+            <p class="font-bold">¡Postulación enviada exitosamente! ✓</p>
+            <p class="mt-2">Recibirás una confirmación en tu correo electrónico.</p>
+            <button 
+                onclick="nuevaPostulacion()"
+                class="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            >
+                Nueva Postulación
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Variable global para almacenar los metadatos completos
+        let metadatosPublicacion = null;
+
+        /**
+         * Formatea un valor para mostrarlo en la tabla
+         */
+        function formatDisplayValue(value, depth = 0) {
+            if (value === null || value === undefined) {
+                return '<span class="text-gray-500">N/A</span>';
+            }
+
+            if (depth > 5) {
+                return '[Demasiado anidado para mostrar]';
+            }
+
+            if (Array.isArray(value)) {
+                if (value.every(item => typeof item !== 'object' || item === null)) {
+                    return value.join(', ');
+                }
+                
+                let listHtml = '<ul class="list-disc list-inside space-y-1 mt-1">';
+                value.forEach(item => {
+                    listHtml += `<li>${formatDisplayValue(item, depth + 1)}</li>`;
+                });
+                listHtml += '</ul>';
+                return listHtml;
+            }
+
+            if (typeof value === 'object') {
+                let objectParts = [];
+                
+                if (('given' in value || 'family' in value) && Object.keys(value).length < 5) {
+                     return `${value.given || ''} ${value.family || ''}`.trim();
+                }
+
+                for (const [key, val] of Object.entries(value)) {
+                    objectParts.push(`<div><strong class="font-medium text-gray-700">${key}:</strong> ${formatDisplayValue(val, depth + 1)}</div>`);
+                }
+                return `<div class="space-y-1">${objectParts.join('')}</div>`;
+            }
+            
+            return `<span class="text-gray-800">${value}</span>`;
+        }
+
+        /**
+         * Renderiza todos los metadatos en una tabla HTML
+         */
+        function renderAllMetadataAsTable(metadata) {
+            let tableHtml = '<div class="border border-gray-200 rounded-lg overflow-hidden"><table class="w-full text-sm">';
+            tableHtml += '<thead class="bg-gray-50"><tr class="text-left"><th class="px-4 py-2 font-semibold">Campo (Metadato)</th><th class="px-4 py-2 font-semibold">Valor</th></tr></thead>';
+            tableHtml += '<tbody>';
+
+            for (const [key, value] of Object.entries(metadata)) {
+                tableHtml += '<tr class="border-t border-gray-200">';
+                tableHtml += `<td class="px-4 py-2 align-top font-medium text-gray-600">${key}</td>`;
+                
+                const displayValue = formatDisplayValue(value);
+
+                tableHtml += `<td class="px-4 py-2 align-top">${displayValue}</td>`;
+                tableHtml += '</tr>';
+            }
+
+            tableHtml += '</tbody></table></div>';
+            return tableHtml;
+        }
+
+        // Manejo de búsqueda DOI
+        document.getElementById('doiForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let doiInput = document.getElementById('doiInput').value.trim();
+            const doiRegex = /(10\.\d{4,9}\/[-._;()/:A-Z0-9]+)/i;
+            const match = doiInput.match(doiRegex);
+
+            const resultadoDiv = document.getElementById('resultado');
+
+            if (!match) {
+                resultadoDiv.innerHTML = `
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                        <p class="font-bold">DOI no válido</p>
+                        <p>Asegúrate de que tenga el formato correcto (ej: 10.xxxx/xxxxx).</p>
+                    </div>`;
+                return;
+            }
+
+            const doi = match[0];
+            const apiUrl = `https://api.crossref.org/works/${doi}`;
+            
+            resultadoDiv.innerHTML = `
+                <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
+                    <p>Buscando metadatos...</p>
+                </div>`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se encontró el DOI o hubo un error en la red.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const metadata = data.message;
+                    metadatosPublicacion = metadata;
+                    
+                    // Guardar datos en campos ocultos
+                    document.getElementById('publicacionTitulo').value = metadata.title ? metadata.title[0] : '';
+                    document.getElementById('publicacionAutores').value = metadata.author ? JSON.stringify(metadata.author) : '';
+                    document.getElementById('publicacionDOI').value = doi;
+                    document.getElementById('publicacionRevista').value = metadata['container-title'] ? metadata['container-title'][0] : '';
+                    document.getElementById('publicacionEditorial').value = metadata.publisher || '';
+                    document.getElementById('publicacionFecha').value = metadata.published ? JSON.stringify(metadata.published) : '';
+                    document.getElementById('publicacionMetadatos').value = JSON.stringify(metadata);
+
+                    const autoresTexto = metadata.author ? metadata.author.map(a => `${a.given || ''} ${a.family || ''}`.trim()).join(', ') : 'N/A';
+                    
+                    resultadoDiv.innerHTML = `
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h3 class="text-lg font-bold text-gray-800 mb-3">${metadata.title ? metadata.title[0] : 'Sin título'}</h3>
+                            <p class="text-gray-700 mb-2"><strong>Autores:</strong> ${autoresTexto}</p>
+                            <p class="text-gray-700 mb-2"><strong>Revista:</strong> ${metadata['container-title'] ? metadata['container-title'][0] : 'N/A'}</p>
+                            <p class="text-gray-700 mb-2"><strong>Editorial:</strong> ${metadata.publisher || 'N/A'}</p>
+                            <p class="text-gray-700"><strong>DOI:</strong> <a href="https://doi.org/${doi}" target="_blank" class="text-blue-600 hover:underline">${doi}</a></p>
+                            
+                            <button 
+                                onclick="continuarPostulacion()"
+                                class="mt-4 w-full bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                            >
+                                Continuar con la postulación →
+                            </button>
+                        </div>
+                        <details class="mt-4 bg-white rounded-lg p-4 border">
+                            <summary class="cursor-pointer text-blue-600 font-medium hover:underline">Ver todos los metadatos disponibles</summary>
+                            <div class="mt-4">
+                                ${renderAllMetadataAsTable(metadata)}
+                            </div>
+                        </details>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultadoDiv.innerHTML = `
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                            <p class="font-bold">Error al obtener los datos</p>
+                            <p>${error.message}</p>
+                        </div>`;
+                });
+        });
+
+        // Funciones de navegación
+        window.continuarPostulacion = function() {
+            document.getElementById('seccionBusqueda').classList.add('hidden');
+            document.getElementById('seccionPostulante').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.volverBusqueda = function() {
+            document.getElementById('seccionPostulante').classList.add('hidden');
+            document.getElementById('seccionBusqueda').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.nuevaPostulacion = function() {
+            document.getElementById('mensajeExito').classList.add('hidden');
+            document.getElementById('seccionBusqueda').classList.remove('hidden');
+            document.getElementById('formularioPostulacion').reset();
+            document.getElementById('doiForm').reset();
+            document.getElementById('resultado').innerHTML = `
+                <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg">
+                    <p>Los resultados de la búsqueda aparecerán aquí.</p>
+                </div>`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Manejo del envío de postulación
+        document.getElementById('formularioPostulacion').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const btnEnviar = document.getElementById('btnEnviar');
+            btnEnviar.disabled = true;
+            btnEnviar.textContent = 'Enviando...';
+
+            try {
+                // 1. Validar PDF
+                const pdfFile = document.getElementById('pdfFile').files[0];
+                if (!pdfFile) throw new Error('Debe seleccionar un archivo PDF');
+                if (pdfFile.size > 10 * 1024 * 1024) throw new Error('El archivo no debe superar 10 MB');
+
+                // 2. Convertir PDF a Base64
+                document.getElementById('uploadProgress').classList.remove('hidden');
+                document.getElementById('progressText').textContent = 'Procesando archivo...';
+                
+                const pdfBase64 = await fileToBase64(pdfFile);
+                
+                // 3. Preparar datos
+                const formData = {
+                    action: 'submitForm',
+                    nombres: document.getElementById('nombres').value,
+                    apellidos: document.getElementById('apellidos').value,
+                    email: document.getElementById('email').value,
+                    facultad: document.getElementById('facultad').value,
+                    escuela: document.getElementById('escuela').value,
+                    telefono: document.getElementById('telefono').value,
+                    publicacion: {
+                        titulo: document.getElementById('publicacionTitulo').value,
+                        autores: JSON.parse(document.getElementById('publicacionAutores').value || '[]'),
+                        doi: document.getElementById('publicacionDOI').value,
+                        revista: document.getElementById('publicacionRevista').value,
+                        editorial: document.getElementById('publicacionEditorial').value,
+                        fecha: document.getElementById('publicacionFecha').value,
+                        metadatosCompletos: metadatosPublicacion
+                    },
+                    pdfBase64: pdfBase64.split(',')[1], // Remover prefijo data:application/pdf;base64,
+                    pdfFileName: `${Date.now()}_${pdfFile.name}`
+                };
+
+                // 4. Enviar a Google Apps Script
+                document.getElementById('progressText').textContent = 'Enviando datos...';
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(formData),
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Mostrar éxito
+                    document.getElementById('seccionPostulante').classList.add('hidden');
+                    document.getElementById('mensajeExito').classList.remove('hidden');
+                    document.getElementById('uploadProgress').classList.add('hidden');
+                } else {
+                    throw new Error(result.message || 'Error desconocido');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al enviar la postulación: ' + error.message);
+                btnEnviar.disabled = false;
+                btnEnviar.textContent = 'Enviar Postulación';
+                document.getElementById('uploadProgress').classList.add('hidden');
+            }
+        });
+
+        /**
+         * Convierte un archivo a Base64
+         */
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+
+</body>
+</html>

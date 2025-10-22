@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>II PREMIO A LA EXCELENCIA CIENTÍFICA UNCP-2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <!-- Librería para exportar a Excel -->
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">II PREMIO A LA EXCELENCIA CIENTÍFICA UNCP-2025</h1>
+        
+        <form id="premioExcelenciaForm" class="needs-validation" novalidate>
+            <!-- Datos del Postulante -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Datos del Postulante</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nombres" class="form-label">Nombres</label>
+                            <input type="text" class="form-control" id="nombres" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="apellidos" class="form-label">Apellidos</label>
+                            <input type="text" class="form-control" id="apellidos" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Correo Institucional</label>
+                            <input type="email" class="form-control" id="email" pattern=".*@uncp\.edu\.pe$" required>
+                            <div class="form-text">Debe ser un correo @uncp.edu.pe</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="facultad" class="form-label">Facultad</label>
+                            <input type="text" class="form-control" id="facultad" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tipoDocente" class="form-label">Tipo de Docente</label>
+                            <select class="form-select" id="tipoDocente" required>
+                                <option value="">Seleccione...</option>
+                                <option value="nombrado">Nombrado</option>
+                                <option value="contratado">Contratado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="resolucion" class="form-label">Resolución de Nombramiento/Contrato</label>
+                            <input type="file" class="form-control" id="resolucion" accept=".pdf" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos del Artículo -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Datos del Artículo</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="doi" class="form-label">DOI del Artículo</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="doi" required>
+                                <button class="btn btn-primary" type="button" id="buscarDOI">Buscar Metadatos</button>
+                            </div>
+                            <div class="form-text">El artículo debe estar indexado en Scopus y tener fecha de aceptación entre 2023-2024</div>
+                        </div>
+                    </div>
+                    <div id="metadatosArticulo" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="titulo" class="form-label">Título del Artículo</label>
+                                <input type="text" class="form-control" id="titulo" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="revista" class="form-label">Revista</label>
+                                <input type="text" class="form-control" id="revista" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaAceptacion" class="form-label">Fecha de Aceptación</label>
+                                <input type="date" class="form-control" id="fechaAceptacion" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="autores" class="form-label">Autores</label>
+                                <textarea class="form-control" id="autores" rows="2" readonly></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rolAutor" class="form-label">Su rol en el artículo</label>
+                                <select class="form-select" id="rolAutor" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="principal">Autor Principal</option>
+                                    <option value="correspondencia">Autor de Correspondencia</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="declaracionJurada" required>
+                        <label class="form-check-label" for="declaracionJurada">
+                            Declaro bajo juramento que la información proporcionada es verdadera y que el artículo no ha sido presentado en ediciones anteriores del Premio a la Excelencia Científica UNCP.
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Enviar Postulación</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/form.js"></script>
+</body>
+</html>
