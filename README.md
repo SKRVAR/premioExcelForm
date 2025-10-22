@@ -45,9 +45,18 @@ Sistema completo de formulario web para postulaciones al Premio a la Excelencia 
 ✅ Email automático de confirmación  
 ✅ **100% Gratuito** - Sin costos de hosting ni base de datos  
 
-## 🚀 Demo en Vivo
+## 🚀 Enlaces del Sistema
 
-**Formulario:** [https://skrvar.github.io/premioExcelForm/form_google_apps_script.html](https://skrvar.github.io/premioExcelForm/form_google_apps_script.html)
+### 🎯 Para Usuarios (Postulantes):
+**Formulario Principal:** [https://skrvar.github.io/premioExcelForm/form_google_apps_script.html](https://skrvar.github.io/premioExcelForm/form_google_apps_script.html)
+
+### 📋 Para Administradores:
+- **Página de Inicio:** [https://skrvar.github.io/premioExcelForm/](https://skrvar.github.io/premioExcelForm/)
+- **Panel Admin:** [https://skrvar.github.io/premioExcelForm/admin.html](https://skrvar.github.io/premioExcelForm/admin.html)
+
+### 🔧 Otras Versiones (Desarrollo):
+- **Formulario Firebase:** [https://skrvar.github.io/premioExcelForm/form.html](https://skrvar.github.io/premioExcelForm/form.html)
+- **Formulario Alternativo:** [https://skrvar.github.io/premioExcelForm/form_premio.html](https://skrvar.github.io/premioExcelForm/form_premio.html)
 
 ## 📦 Archivos Principales
 
