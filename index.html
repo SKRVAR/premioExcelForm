@@ -3,74 +3,632 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premio Excelencia UNCP 2025</title>
+    <title>II Premio a la Excelencia Científica UNCP 2025</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .hero-title {
+            font-family: 'Montserrat', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.8), 0 0 25px rgba(212, 175, 55, 0.4);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero-subtitle {
+            font-family: 'Montserrat', 'Helvetica Neue', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hero-description {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            color: #e2e8f0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        
+        .header-gradient {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(212, 175, 55, 0.8) 50%, rgba(0, 0, 0, 0.96) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(13, 132, 105, 0.6);
+        }
+        
+        .accent-gradient {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(212, 175, 55, 0.7) 50%, rgba(0, 0, 0, 0.9) 100%);
+            border-top: 3px solid rgba(13, 132, 105, 0.8);
+        }
+        
+        .hero-background {
+            background: linear-gradient(
+                to left, 
+                rgba(0, 0, 0, 0.8) 0%,
+                rgba(0, 0, 0, 0.5) 100%
+            ),
+            url('./recursos/uncp.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border: 3px solid rgba(13, 132, 105, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.5rem;
+            }
+            .hero-description {
+                font-size: 1rem;
+            }
+            .hero-background {
+                background-attachment: scroll;
+                min-height: 100vh;
+                padding: 80px 0;
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(212, 175, 55, 0.8) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(13, 132, 105, 0.6);
+            color: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.9) 0%, rgba(255, 215, 0, 0.8) 100%);
+            border-color: rgba(13, 132, 105, 1);
+            color: rgba(0, 0, 0, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4), 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+        
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.8);
+            color: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(13, 132, 105, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(13, 132, 105, 0.8);
+            border-color: rgba(13, 132, 105, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(13, 132, 105, 0.3);
+        }
+
+        .tab-navigation {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        .tab-nav button {
+            padding: 16px 24px;
+            background: none;
+            border: none;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab-nav button:hover {
+            color: #d4af37;
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .tab-nav button.active {
+            color: #d4af37;
+            border-bottom-color: #d4af37;
+            font-weight: 600;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%);
+            border-left: 3px solid rgba(13, 132, 105, 0.6);
+            border-right: 3px solid rgba(13, 132, 105, 0.6);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .tab-nav {
+                justify-content: flex-start;
+                padding: 0 16px;
+            }
+            .tab-nav button {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
-        
-        <!-- Logo UNCP (si tienes uno, agrégalo aquí) -->
-        <div class="mb-6">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                Premio a la Excelencia Científica
-            </h1>
-            <h2 class="text-xl text-gray-600">
-                Universidad Nacional del Centro del Perú
-            </h2>
-            <p class="text-lg text-blue-600 font-semibold mt-2">UNCP - 2025</p>
+<body class="bg-gray-50 text-gray-700">
+    <!-- Header con Navbar -->
+    <header class="header-gradient text-white py-4 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                    <span class="text-xl font-bold text-yellow-400">🎓</span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold">UNCP</h1>
+                    <p class="text-xs opacity-90">2025</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <button data-tab="objetivo" class="nav-tab hover:opacity-80 transition text-sm font-medium">Objetivo</button>
+                <button data-tab="requisitos" class="nav-tab hover:opacity-80 transition text-sm font-medium">Requisitos</button>
+                <button data-tab="cronograma" class="nav-tab hover:opacity-80 transition text-sm font-medium">Cronograma</button>
+                <button data-tab="faq" class="nav-tab hover:opacity-80 transition text-sm font-medium">FAQ</button>
+            </nav>
+                <button data-tab="faq" class="nav-tab hover:opacity-80 transition text-sm font-medium">FAQ</button>
+            </nav>
         </div>
+    </header>
 
-        <!-- Descripción -->
-        <div class="mb-8 space-y-4">
-            <p class="text-gray-700 text-lg leading-relaxed">
-                Bienvenido al sistema de postulación para el 
-                <strong>II Premio a la Excelencia Científica UNCP-2025</strong>
-            </p>
-            <p class="text-gray-600">
-                Este formulario permite a los docentes e investigadores postular 
-                sus publicaciones científicas indexadas en Scopus.
-            </p>
+    <!-- Hero Section Full Height -->
+    <section class="hero-background">
+        <div class="container mx-auto px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto text-center">
+                <!-- Badge -->
+                <div class="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-black to-gray-900 backdrop-blur-sm border-2 border-green-600 mb-8 shadow-lg">
+                    <span class="text-yellow-400 font-bold text-lg">🏆 II Edición 2025</span>
+                </div>
+                
+                <!-- Título Principal -->
+                <h1 class="hero-title mb-4 text-4xl lg:text-5xl">
+                    PREMIO A LA EXCELENCIA
+                </h1>
+                <h2 class="hero-title mb-8 text-4xl lg:text-5xl">
+                    CIENTÍFICA
+                </h2>
+                
+                <!-- Subtítulo -->
+                <p class="hero-subtitle mb-10 text-xl lg:text-2xl opacity-90">
+                    Universidad Nacional del Centro del Perú
+                </p>
+                
+                <!-- Descripción -->
+                <p class="hero-description text-lg max-w-2xl mx-auto mb-12 leading-relaxed">
+                    Reconocimiento a investigadores que publican en revistas indexadas en Scopus, 
+                    contribuyendo al posicionamiento internacional de nuestra universidad.
+                </p>
+                
+                <!-- Botones CTA -->
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a 
+                        href="./form_google_apps_script.html"
+                        class="btn-primary font-semibold px-8 py-4 rounded-xl text-lg inline-block text-center"
+                    >
+                        🚀 Postular Ahora
+                    </a>
+                    <a 
+                        href="./recursos/BasesPrmExcelencia.pdf"
+                        target="_blank"
+                        class="btn-secondary font-semibold px-8 py-4 rounded-xl text-lg inline-block text-center"
+                    >
+                        📄 Descargar Bases
+                    </a>
+                </div>
+                
+                <!-- Indicador de scroll -->
+                <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <div class="w-6 h-10 border-2 border-white border-opacity-50 rounded-full flex justify-center">
+                        <div class="w-1 h-3 bg-white bg-opacity-70 rounded-full mt-2 animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <!-- Botón principal -->
-        <div class="mb-6">
+    <!-- Navegación por Pestañas -->
+    <div class="tab-navigation">
+        <div class="tab-nav">
+            <button class="tab-button active" data-tab="objetivo">🎯 Objetivo</button>
+            <button class="tab-button" data-tab="requisitos">📋 Requisitos</button>
+            <button class="tab-button" data-tab="cronograma">📅 Cronograma</button>
+            <button class="tab-button" data-tab="faq">❓ FAQ</button>
+        </div>
+    </div>
+
+    <!-- Contenido de Pestañas -->
+    <main>
+        <!-- Pestaña: Objetivo -->
+        <div id="objetivo" class="tab-content active">
+            <h3 class="section-title mb-8 text-center">¿Por qué participar?</h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg border border-gray-200 text-center">
+                    <h4 class="font-bold text-gray-800 mb-3">Reconocimiento Académico</h4>
+                    <p class="text-gray-600 text-sm">Visibilidad y prestigio institucional por investigaciones de calidad.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg border border-gray-200 text-center">
+                    <h4 class="font-bold text-gray-800 mb-3">Incentivos Económicos</h4>
+                    <p class="text-gray-600 text-sm">Reconocimientos e incentivos según cuartil de publicación en Scopus.</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg border border-gray-200 text-center">
+                    <h4 class="font-bold text-gray-800 mb-3">Impacto Internacional</h4>
+                    <p class="text-gray-600 text-sm">Contribuye al ranking y reputación científica de UNCP.</p>
+                </div>
+            </div>
+        </div>
+            
+        <!-- Pestaña: Requisitos -->
+        <div id="requisitos" class="tab-content">
+            <h3 class="section-title mb-8 text-center">Criterios de Elegibilidad</h3>
+                
+                <div class="space-y-8">
+                    <!-- Sobre la Publicación -->
+                    <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm">
+                        <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                            <span class="text-2xl">📄</span> Sobre la Publicación
+                        </h4>
+                        <div class="space-y-4 pl-8">
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Publicado en revista indexada en Scopus durante 2023-2024</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Clasificado en cuartil Q1, Q2, Q3 o Q4</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Al menos un autor debe ser investigador de UNCP</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Factor de impacto mínimo: 1.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sobre los Autores -->
+                    <div class="bg-white p-8 rounded-xl border border-gray-100 shadow-sm">
+                        <h4 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                            <span class="text-2xl">👥</span> Sobre los Autores
+                        </h4>
+                        <div class="space-y-4 pl-8">
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Docentes investigadores o estudiantes de posgrado de UNCP</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Investigador responsable debe estar registrado en el DINA</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>No haber ganado en esta categoría en la edición anterior</span>
+                            </div>
+                            <div class="requirement-item">
+                                <span class="text-lg">✓</span>
+                                <span>Afiliación vigente con UNCP al momento de la publicación</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+            
+        <!-- Pestaña: Cronograma -->
+        <div id="cronograma" class="tab-content">
+            <h3 class="section-title mb-8 text-center">Cronograma de Ejecución</h3>
+                
+                <div class="space-y-6">
+                    <!-- Evento 1 -->
+                    <div class="flex gap-4 md:gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                                1
+                            </div>
+                            <div class="w-1 h-12 bg-gradient-to-b from-yellow-500 to-transparent mt-2"></div>
+                        </div>
+                        <div class="pb-6">
+                            <h4 class="text-lg font-bold text-gray-800">Apertura de Convocatoria</h4>
+                            <p class="text-sm text-gray-500 font-semibold">Lunes, 18 de Noviembre 2024</p>
+                            <p class="text-gray-600 mt-2">Se abre el período de inscripción para todos los investigadores interesados.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Evento 2 -->
+                    <div class="flex gap-4 md:gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg" style="background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
+                                2
+                            </div>
+                            <div class="w-1 h-12 bg-gradient-to-b from-green-600 to-transparent mt-2" style="background: linear-gradient(to bottom, #0d8469, transparent);"></div>
+                        </div>
+                        <div class="pb-6">
+                            <h4 class="text-lg font-bold text-gray-800">Cierre de Inscripciones</h4>
+                            <p class="text-sm text-gray-500 font-semibold">Martes, 28 de Noviembre 2024</p>
+                            <p class="text-gray-600 mt-2">Límite para enviar solicitudes y documentación requerida.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Evento 3 -->
+                    <div class="flex gap-4 md:gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                                3
+                            </div>
+                            <div class="w-1 h-12 bg-gradient-to-b from-yellow-600 to-transparent mt-2"></div>
+                        </div>
+                        <div class="pb-6">
+                            <h4 class="text-lg font-bold text-gray-800">Verificación de Documentos</h4>
+                            <p class="text-sm text-gray-500 font-semibold">Hasta 30 de Noviembre 2024</p>
+                            <p class="text-gray-600 mt-2">Comisión revisará completitud y validez de documentación presentada.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Evento 4 -->
+                    <div class="flex gap-4 md:gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg" style="background: linear-gradient(135deg, #0d8469 0%, #0a6b56 100%);">
+                                4
+                            </div>
+                            <div class="w-1 h-12 bg-gradient-to-b from-green-500 to-transparent mt-2" style="background: linear-gradient(to bottom, #0d8469, transparent);"></div>
+                        </div>
+                        <div class="pb-6">
+                            <h4 class="text-lg font-bold text-gray-800">Evaluación de Méritos</h4>
+                            <p class="text-sm text-gray-500 font-semibold">Diciembre 1-10 de 2024</p>
+                            <p class="text-gray-600 mt-2">Análisis riguroso de criterios y calificación de postulantes.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Evento 5 -->
+                    <div class="flex gap-4 md:gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                                5
+                            </div>
+                            <div class="w-1 h-12 bg-gradient-to-b from-yellow-500 to-transparent mt-2"></div>
+                        </div>
+                        <div class="pb-6">
+                            <h4 class="text-lg font-bold text-gray-800">Resultados Preliminares</h4>
+                            <p class="text-sm text-gray-500 font-semibold">Martes, 3 de Diciembre 2024</p>
+                            <p class="text-gray-600 mt-2">Publicación de resultados y período de apelaciones.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Evento 6 -->
+                    <div class="flex gap-4 md:gap-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-green-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg" style="background: linear-gradient(135deg, #d4af37 0%, #0d8469 100%);">
+                                6
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-gray-800">Ceremonia de Reconocimiento</h4>
+                            <p class="text-sm text-gray-500 font-semibold">Jueves, 19 de Diciembre 2024</p>
+                            <p class="text-gray-600 mt-2">Acto oficial de reconocimiento a la excelencia científica de los participantes.</p>
+                        </div>
+                    </div>
+                </div>
+        </div>
+            
+        <!-- Pestaña: FAQ -->
+        <div id="faq" class="tab-content">
+            <h3 class="section-title mb-8 text-center">Preguntas Frecuentes</h3>
+                
+                <div class="space-y-4">
+                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                        <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
+                            ¿Cuáles son los criterios de evaluación?
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
+                            <p>La evaluación se realiza en tres componentes:</p>
+                            <ul class="mt-3 space-y-2 list-disc list-inside">
+                                <li><strong>Factor de Impacto de la Revista (30%):</strong> Mayor factor de impacto = mayor puntuación</li>
+                                <li><strong>Calidad de la Investigación (50%):</strong> Originalidad, metodología, relevancia y contribución al conocimiento</li>
+                                <li><strong>Impacto del Autor (20%):</strong> Trayectoria investigativa, índice h, y reconocimiento académico</li>
+                            </ul>
+                        </div>
+                    </details>
+                    
+                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                        <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
+                            ¿Qué documentos debo presentar?
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
+                            <p>Debes presentar los siguientes documentos:</p>
+                            <ul class="mt-3 space-y-2 list-disc list-inside">
+                                <li>Formulario de postulación completo</li>
+                                <li>Copia del artículo publicado (PDF)</li>
+                                <li>Constancia de publicación en Scopus (captura de pantalla o certificado)</li>
+                                <li>Curriculum Vitae actualizado del investigador responsable</li>
+                                <li>Comprobante de afiliación con UNCP</li>
+                            </ul>
+                        </div>
+                    </details>
+                    
+                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                        <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
+                            ¿Cuál es el costo de participación?
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
+                            <p><strong>La participación es completamente GRATUITA.</strong></p>
+                            <p class="mt-2">No hay cuota de inscripción ni costos asociados. Solo debes enviar tu postulación en el período establecido.</p>
+                        </div>
+                    </details>
+                    
+                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                        <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
+                            ¿Cuál es la fecha límite de postulación?
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
+                            <p><strong>Fecha límite: Martes, 28 de Noviembre de 2024</strong></p>
+                            <p class="mt-2">Todas las solicitudes deben ser presentadas antes de las 11:59 PM de esta fecha.</p>
+                        </div>
+                    </details>
+                    
+                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                        <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
+                            ¿Cómo serán anunciados los ganadores?
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
+                            <p>Los ganadores serán anunciados de forma oficial:</p>
+                            <ul class="mt-3 space-y-2 list-disc list-inside">
+                                <li>A través del portal web de UNCP</li>
+                                <li>Notificación directa por correo electrónico</li>
+                                <li>Publicación en redes sociales institucionales</li>
+                                <li>Ceremonia oficial de premiación el 19 de Diciembre 2024</li>
+                            </ul>
+                        </div>
+                    </details>
+                    
+                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                        <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
+                            ¿Dónde puedo obtener más información?
+                            <span class="transition group-open:rotate-180">▼</span>
+                        </summary>
+                        <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
+                            <p>Para más información, contacta con:</p>
+                            <ul class="mt-3 space-y-2">
+                                <li>📧 <strong>Dr. Armando Alózano Aguilar:</strong> aalozano@uncp.edu.pe</li>
+                                <li>📧 <strong>Dr. Oscar Sedano Quispe:</strong> osedano@uncp.edu.pe</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+        </div>
+    </main>
+
+    <!-- CTA Final -->
+    <section class="accent-gradient text-white py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-3xl font-bold mb-4">¿Listo para enviar tu postulación?</h3>
+            <p class="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+                Accede al formulario de postulación y participa en el reconocimiento de la excelencia científica de UNCP
+            </p>
             <a 
                 href="./form_google_apps_script.html"
-                class="inline-block bg-blue-600 text-white font-semibold px-8 py-4 rounded-lg text-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg"
+                class="inline-block bg-white text-gray-900 font-bold px-10 py-4 rounded-xl text-lg hover:shadow-xl transition hover:scale-105"
             >
-                🚀 Iniciar Postulación
+                📝 Ir al Formulario
             </a>
         </div>
+    </section>
 
-        <!-- Información adicional -->
-        <div class="border-t pt-6 space-y-3">
-            <h3 class="text-lg font-semibold text-gray-800">Requisitos:</h3>
-            <ul class="text-gray-600 space-y-1">
-                <li>• Artículo indexado en Scopus</li>
-                <li>• Fecha de aceptación: 2023-2024</li>
-                <li>• Ser docente UNCP (nombrado o contratado)</li>
-                <li>• Archivo PDF del artículo completo</li>
-            </ul>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <!-- Columna 1 -->
+                <div>
+                    <h5 class="text-white font-bold text-lg mb-4">UNCP 2025</h5>
+                    <p class="text-sm">Premio a la Excelencia Científica</p>
+                    <p class="text-sm text-gray-400 mt-2">Vicerrectorado de Investigación</p>
+                </div>
+                
+                <!-- Columna 2 -->
+                <div>
+                    <h5 class="text-white font-bold mb-4">Enlaces Útiles</h5>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="./recursos/BasesPrmExcelencia.pdf" target="_blank" class="hover:text-white transition">📄 Bases del Concurso (PDF)</a></li>
+                        <li><a href="./INSTRUCCIONES_GOOGLE_APPS_SCRIPT.md" class="hover:text-white transition">📖 Instrucciones Técnicas</a></li>
+                        <li><a href="#" class="hover:text-white transition">💻 Recursos</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Columna 3 -->
+                <div>
+                    <h5 class="text-white font-bold mb-4">Contacto</h5>
+                    <p class="text-sm">Vicerrectorado de Investigación</p>
+                    <p class="text-sm">Instituto de Investigación</p>
+                    <p class="text-sm text-gray-400 mt-2">
+                        <a href="mailto:aalozano@uncp.edu.pe" class="hover:text-white transition">aalozano@uncp.edu.pe</a>
+                    </p>
+                    <p class="text-sm text-gray-400">
+                        <a href="mailto:osedano@uncp.edu.pe" class="hover:text-white transition">osedano@uncp.edu.pe</a>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8">
+                <p class="text-center text-sm text-gray-400">
+                    © 2025 Universidad Nacional del Centro del Perú. Todos los derechos reservados.
+                </p>
+            </div>
         </div>
+    </footer>
 
-        <!-- Enlaces adicionales -->
-        <div class="mt-8 pt-6 border-t text-sm text-gray-500">
-            <p>
-                <a href="./INSTRUCCIONES_GOOGLE_APPS_SCRIPT.md" 
-                   class="text-blue-600 hover:underline">📖 Ver instrucciones técnicas</a>
-                |
-                <a href="https://github.com/SKRVAR/premioExcelForm" 
-                   class="text-blue-600 hover:underline">💻 Código fuente</a>
-            </p>
-            <p class="mt-2">
-                Vicerrectorado de Investigación - UNCP
-            </p>
-        </div>
+    <script>
+        // Sistema de Pestañas Mejorado
+        const tabButtons = document.querySelectorAll('.tab-button, .nav-tab');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-    </div>
+        function showTab(targetTab) {
+            // Ocultar todas las pestañas
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Mostrar pestaña seleccionada
+            const targetContent = document.getElementById(targetTab);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+            
+            // Activar botón correspondiente
+            document.querySelectorAll(`[data-tab="${targetTab}"]`).forEach(button => {
+                button.classList.add('active');
+            });
+        }
+
+        // Event listeners para todos los botones de pestañas
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetTab = button.getAttribute('data-tab');
+                showTab(targetTab);
+            });
+        });
+    </script>
 </body>
 </html>
