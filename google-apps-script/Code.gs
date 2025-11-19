@@ -29,23 +29,10 @@ function inicializarProyecto() {
   
   // Configurar encabezados
   const headers = [
-    'Fecha Postulación',
-    'Nombres',
-    'Apellidos',
-    'Email',
-    'Facultad',
-    'Teléfono',
-    'DOI',
-    'Título Artículo',
-    'Autores del Artículo',
-    'Autores UNCP',
-    'Autores Externos',
-    'Revista',
-    'Editorial',
-    'Fecha Publicación',
-    'URLs PDFs Verificación',
-    'Estado',
-    'ID Carpeta Drive'
+    'Fecha Postulación', 'Nombres', 'Apellidos', 'Email', 'DOI', 'Título',
+    'Autores', 'Afiliaciones', 'Vínculos', 'Corresponsales',
+    'Año Publicación', 'Enlaces PDFs', 'PDF IDs',
+    'Estado', 'Observaciones'
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -140,11 +127,11 @@ function checkDuplicateDOI(data) {
     const dataRange = sheet.getDataRange();
     const values = dataRange.getValues();
     
-    // Buscar DOI duplicado (columna 7 = índice 6)
+    // Buscar DOI duplicado (columna F = índice 5, ahora con columna ID)
     // Empezar desde la fila 2 (índice 1) para saltar encabezados
     for (let i = 1; i < values.length; i++) {
-      const rowDOI = values[i][6]; // Columna DOI
-      const rowTitulo = values[i][7]; // Columna Título
+      const rowDOI = values[i][5]; // Columna DOI (índice 5)
+      const rowTitulo = values[i][6]; // Columna Título (índice 6)
       
       // Verificar si el DOI coincide o el título es muy similar
       if (rowDOI && (rowDOI.toLowerCase() === doi.toLowerCase() || 
@@ -154,16 +141,15 @@ function checkDuplicateDOI(data) {
         return createResponse(false, 'Este artículo ya ha sido postulado', {
           isDuplicate: true,
           postulacionPrevia: {
-            fecha: values[i][0], // Fecha postulación
-            nombres: values[i][1],
-            apellidos: values[i][2],
-            email: values[i][3],
-            facultad: values[i][4],
-            telefono: values[i][5],
-            doi: values[i][6],
-            titulo: values[i][7],
-            autoresUNCP: values[i][9],
-            estado: values[i][15]
+            id: values[i][0], // ID postulación
+            fecha: values[i][1], // Fecha postulación
+            nombres: values[i][2],
+            apellidos: values[i][3],
+            email: values[i][4],
+            doi: values[i][5],
+            titulo: values[i][6],
+            autores: values[i][7], // Autores (índice 7)
+            estado: values[i][14] // Estado (índice 14)
           }
         });
       }
@@ -199,7 +185,7 @@ function handleFileUpload(data) {
       data.fileName
     );
     
-    // Crear archivo en Drive
+    // Crear archivo en Drive (en carpeta principal temporalmente)
     const file = folder.createFile(fileBlob);
     
     // Hacer el archivo accesible con el link
@@ -253,74 +239,187 @@ function guardarPDF(base64Data, fileName, carpeta = null) {
  */
 function handleFormSubmission(data) {
   try {
-    const folderId = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
-    const carpetaPrincipal = DriveApp.getFolderById(folderId);
-    
-    // 1. Crear subcarpeta para esta postulación
-    const nombreCarpeta = `${data.apellidos}_${data.nombres}_${new Date().getTime()}`;
-    const subcarpeta = carpetaPrincipal.createFolder(nombreCarpeta);
-    
-    // 2. Guardar PDFs de los autores UNCP
-    const autoresUNCP = [];
-    const autoresExternos = [];
-    const pdfsUrls = [];
-    
-    data.publicacion.autores.forEach((autor, index) => {
-      if (autor.afiliacion === 'UNCP') {
-        autoresUNCP.push(autor.nombre);
-        
-        // Guardar PDF de verificación
-        if (autor.pdfVerificacion) {
-          const pdfInfo = guardarPDF(autor.pdfVerificacion, autor.pdfFileName, subcarpeta);
-          pdfsUrls.push(`${autor.nombre}: ${pdfInfo.fileUrl}`);
-        }
-      } else {
-        autoresExternos.push(autor.nombre);
-      }
-    });
-    
-    // 3. Guardar datos en Google Sheets
     const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+    const folderId = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
     const ss = SpreadsheetApp.openById(sheetId);
     const sheet = ss.getActiveSheet();
+    const carpetaPrincipal = DriveApp.getFolderById(folderId);
     
-    // Preparar listado de todos los autores
-    const todosAutores = data.publicacion.autores.map(a => 
-      `${a.nombre} (${a.afiliacion})`
-    ).join('; ');
+    // Configurar encabezados si es la primera vez
+    if (sheet.getLastRow() === 0) {
+      const headers = [
+        'ID', 'Fecha Postulación', 'Nombres', 'Apellidos', 'Email', 'DOI', 'Título',
+        'Autores', 'Afiliaciones', 'Vínculos', 'Corresponsales',
+        'Año Publicación', 'Enlaces PDFs', 'PDF IDs',
+        'Estado', 'Observaciones'
+      ];
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    }
     
-    // Preparar datos para la fila
+    // Generar ID correlativo
+    const postulacionID = generarSiguienteID(sheet);
+    
+    // Crear subcarpeta para esta postulación con formato: ID_ApellidosLimpios_Timestamp
+    const timestamp = new Date().getTime();
+    const apellidosLimpios = limpiarTexto(data.apellidos);
+    const nombreCarpeta = `${postulacionID}_${apellidosLimpios}_${timestamp}`;
+    const subcarpeta = carpetaPrincipal.createFolder(nombreCarpeta);
+    
+    // Extraer datos de publicación (vienen en data.publicacion)
+    const publicacion = data.publicacion || {};
+    const autoresData = publicacion.autores || [];
+    
+    // Procesar autores en arrays separados
+    let autoresArray = [];
+    let afiliacionesArray = [];
+    let vinculosArray = [];
+    let corresponsalesArray = [];
+    let enlacesPDFsArray = [];
+    let pdfIDsArray = [];
+    
+    if (Array.isArray(autoresData) && autoresData.length > 0) {
+      autoresData.forEach((autor, index) => {
+        // Formato: "Apellidos, Nombres" (usar el nombre completo si viene así)
+        const nombreCompleto = autor.nombre || `${autor.apellidos || ''}, ${autor.nombres || ''}`;
+        autoresArray.push(nombreCompleto);
+        
+        // Afiliación declarada
+        const afiliacion = autor.afiliacionDeclarada || autor.afiliacion || 'ninguno';
+        afiliacionesArray.push(afiliacion);
+        
+        // Vínculo: "uncp" o "ninguno"
+        let vinculo = 'ninguno';
+        if (autor.vinculoLaboral === 'UNCP' || autor.vinculo === 'uncp') {
+          vinculo = 'uncp';
+        }
+        vinculosArray.push(vinculo);
+        
+        // Corresponsal: "si" o "no"
+        const corresponsal = (autor.esAutorCorresponsal || autor.corresponsal) ? 'si' : 'no';
+        corresponsalesArray.push(corresponsal);
+        
+        // PDFs - verificar si ya fue subido previamente
+        if (vinculo === 'uncp') {
+          if (autor.pdfId && autor.pdfUrl) {
+            // El PDF ya fue subido, renombrarlo y moverlo a la subcarpeta
+            try {
+              const file = DriveApp.getFileById(autor.pdfId);
+              
+              // Generar nuevo nombre: autor_X_timestamp_NombreAutor_sustentoVinculo.pdf
+              const nombreAutorLimpio = limpiarTexto(autor.nombre || '');
+              const nuevoNombre = `autor_${index + 1}_${timestamp}_${nombreAutorLimpio}_sustentoVinculo.pdf`;
+              
+              // Renombrar y mover
+              file.setName(nuevoNombre);
+              file.moveTo(subcarpeta);
+              
+              // Actualizar URL después del movimiento
+              enlacesPDFsArray.push(file.getUrl());
+              pdfIDsArray.push(autor.pdfId);
+            } catch (moveError) {
+              Logger.log(`Error moviendo PDF del autor ${index + 1}: ${moveError.toString()}`);
+              enlacesPDFsArray.push(autor.pdfUrl); // Mantener URL aunque no se movió
+              pdfIDsArray.push(autor.pdfId);
+            }
+          } else if (autor.pdfVerificacion && autor.pdfFileName) {
+            // Modo legacy: PDF viene en Base64 (por si acaso)
+            try {
+              const pdfInfo = guardarPDF(autor.pdfVerificacion, autor.pdfFileName, subcarpeta);
+              enlacesPDFsArray.push(pdfInfo.fileUrl);
+              pdfIDsArray.push(pdfInfo.fileId);
+            } catch (pdfError) {
+              Logger.log(`Error guardando PDF del autor ${index + 1}: ${pdfError.toString()}`);
+              enlacesPDFsArray.push('error');
+              pdfIDsArray.push('error');
+            }
+          } else {
+            enlacesPDFsArray.push('ninguno');
+            pdfIDsArray.push('ninguno');
+          }
+        } else {
+          // Autores externos no requieren PDF
+          enlacesPDFsArray.push('ninguno');
+          pdfIDsArray.push('ninguno');
+        }
+      });
+    }
+    
+    // Convertir arrays a strings separados por punto y coma
+    const autoresString = autoresArray.join(';');
+    const afiliacionesString = afiliacionesArray.join(';');
+    const vinculosString = vinculosArray.join(';');
+    const corresponsalesString = corresponsalesArray.join(';');
+    const enlacesPDFsString = enlacesPDFsArray.join(';');
+    const pdfIDsString = pdfIDsArray.join(';');
+    
+    // Obtener año de publicación (ya viene como año simple desde el frontend)
+    const anio = publicacion.fecha || '';
+    
+    // Preparar datos para insertar (16 columnas - ID es la primera)
     const rowData = [
-      new Date(), // Fecha postulación
-      data.nombres,
-      data.apellidos,
-      data.email,
-      data.facultad,
-      data.telefono,
-      data.publicacion.doi,
-      data.publicacion.titulo,
-      todosAutores, // Todos los autores con su afiliación
-      autoresUNCP.join('; '), // Solo autores UNCP
-      autoresExternos.join('; '), // Solo autores externos
-      data.publicacion.revista,
-      data.publicacion.editorial,
-      data.publicacion.fecha,
-      pdfsUrls.join('\n'), // URLs de PDFs de verificación
-      'Pendiente', // Estado inicial
-      subcarpeta.getId()
+      postulacionID, // ID
+      new Date(), // Fecha Postulación
+      data.nombres || '', // Nombres
+      data.apellidos || '', // Apellidos
+      data.email || '', // Email
+      publicacion.doi || '', // DOI
+      publicacion.titulo || '', // Título
+      autoresString, // Autores
+      afiliacionesString, // Afiliaciones
+      vinculosString, // Vínculos
+      corresponsalesString, // Corresponsales
+      anio, // Año Publicación
+      enlacesPDFsString, // Enlaces PDFs
+      pdfIDsString, // PDF IDs
+      'Pendiente', // Estado
+      '' // Observaciones
     ];
     
-    // Añadir fila
+    // Insertar datos
+    const nuevaFila = sheet.getLastRow() + 1;
     sheet.appendRow(rowData);
     
-    // 4. Enviar email de confirmación
-    enviarEmailConfirmacion(data.email, data.nombres, data.apellidos, autoresUNCP.length);
+    // Formatear la columna de Enlaces PDFs con hipérvínculos separados
+    if (enlacesPDFsArray.length > 0) {
+      const columnaEnlacesPDFs = 13; // Columna M (Enlaces PDFs)
+      const celda = sheet.getRange(nuevaFila, columnaEnlacesPDFs);
+      
+      // Crear fórmula con hipérvínculos separados por saltos de línea
+      let formulas = [];
+      enlacesPDFsArray.forEach((url, idx) => {
+        if (url !== 'ninguno' && url !== 'error') {
+          const nombreAutor = autoresArray[idx] || `Autor ${idx + 1}`;
+          formulas.push(`HYPERLINK("${url}"; "PDF ${idx + 1} - ${nombreAutor}")`);
+        } else {
+          formulas.push(`"${url}"`);
+        }
+      });
+      
+      if (formulas.length > 0) {
+        // Usar CHAR(10) para saltos de línea dentro de la celda
+        const formula = formulas.join(' & CHAR(10) & ');
+        celda.setFormula(`=${formula}`);
+        celda.setWrap(true); // Habilitar ajuste de texto
+      }
+    }
     
-    return createResponse(true, 'Postulación enviada correctamente', {
-      carpetaUrl: subcarpeta.getUrl(),
+    // Enviar email de confirmación
+    const emailEnviado = enviarEmailConfirmacion(
+      data.email,
+      data.nombres,
+      data.apellidos, 
+      publicacion.titulo || '',
+      publicacion.doi || '',
+      autoresString,
+      postulacionID,
+      anio
+    );
+    
+    return createResponse(true, 'Postulación guardada exitosamente', {
       rowNumber: sheet.getLastRow(),
-      autoresUNCP: autoresUNCP.length,
-      autoresExternos: autoresExternos.length
+      totalAutores: autoresData.length,
+      carpetaUrl: subcarpeta.getUrl(),
+      emailEnviado: emailEnviado
     });
     
   } catch (error) {
@@ -336,34 +435,119 @@ function handleFormSubmission(data) {
 /**
  * Envía un email de confirmación al postulante
  */
-function enviarEmailConfirmacion(email, nombres, apellidos, numAutoresUNCP) {
+function enviarEmailConfirmacion(email, nombres, apellidos, titulo, doi, autores, postulacionID, anio) {
   try {
-    const subject = 'Confirmación de Postulación - Premio Excelencia UNCP 2025';
-    const body = `
-Estimado/a ${nombres} ${apellidos},
-
-Su postulación al II Premio a la Excelencia Científica UNCP-2025 ha sido recibida exitosamente.
-
-Fecha de recepción: ${new Date().toLocaleString('es-PE')}
-Número de autores con afiliación UNCP: ${numAutoresUNCP}
-
-El comité evaluador revisará su postulación y le comunicaremos los resultados oportunamente.
-
-Atentamente,
-Vicerrectorado de Investigación
-Universidad Nacional del Centro del Perú
+    const subject = `Confirmación de Postulación ${postulacionID} - II Premio de Excelencia Científica UNCP 2025`;
+    
+    // Separar autores por punto y coma para mostrarlos en lista
+    const listaAutores = autores.split(';').map(a => `<li>${a.trim()}</li>`).join('');
+    
+    const htmlBody = `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 650px; margin: 0 auto; background: #ffffff;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); padding: 30px 20px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 600;">II Premio de Excelencia Científica UNCP 2025</h1>
+          <p style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 14px;">Universidad Nacional del Centro del Perú</p>
+        </div>
+        
+        <!-- Body -->
+        <div style="padding: 30px 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 10px 10px;">
+          <div style="background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; text-align: center; margin-bottom: 20px;">
+            <strong style="font-size: 16px;">✓ Postulación Recibida Exitosamente</strong>
+          </div>
+          
+          <p style="color: #374151; font-size: 16px; line-height: 1.6;">Estimado/a <strong>${nombres} ${apellidos}</strong>,</p>
+          
+          <p style="color: #374151; font-size: 14px; line-height: 1.6;">
+            Su postulación ha sido registrada correctamente en nuestro sistema. A continuación, encontrará los detalles de su envío:
+          </p>
+          
+          <!-- Datos de la Postulación -->
+          <div style="background: #f9fafb; padding: 20px; border-left: 4px solid #3b82f6; margin: 25px 0; border-radius: 6px;">
+            <h3 style="color: #1e3a8a; margin: 0 0 15px 0; font-size: 16px;">Datos de la Postulación</h3>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 140px;"><strong>Código:</strong></td>
+                <td style="padding: 8px 0; color: #111827; font-size: 14px;"><strong style="color: #3b82f6; font-size: 16px;">${postulacionID}</strong></td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-size: 14px;"><strong>Título:</strong></td>
+                <td style="padding: 8px 0; color: #111827; font-size: 14px;">${titulo}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-size: 14px;"><strong>DOI:</strong></td>
+                <td style="padding: 8px 0; color: #111827; font-size: 14px;"><a href="https://doi.org/${doi}" style="color: #3b82f6; text-decoration: none;">${doi}</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-size: 14px;"><strong>Año:</strong></td>
+                <td style="padding: 8px 0; color: #111827; font-size: 14px;">${anio || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-size: 14px; vertical-align: top;"><strong>Autores:</strong></td>
+                <td style="padding: 8px 0; color: #111827; font-size: 14px;">
+                  <ul style="margin: 0; padding-left: 20px;">
+                    ${listaAutores}
+                  </ul>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-size: 14px;"><strong>Estado:</strong></td>
+                <td style="padding: 8px 0;">
+                  <span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">Pendiente de revisión</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+          
+          <!-- Próximos Pasos -->
+          <div style="background: #eff6ff; padding: 20px; border-radius: 8px; margin: 25px 0;">
+            <h3 style="color: #1e40af; margin: 0 0 12px 0; font-size: 15px;">📅 Próximos Pasos</h3>
+            <ol style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 14px; line-height: 1.8;">
+              <li>Su postulación será evaluada por el Comité de Excelencia Científica</li>
+              <li>Le notificaremos sobre cualquier actualización del estado</li>
+              <li>Los resultados finales serán comunicados vía correo electrónico</li>
+            </ol>
+          </div>
+          
+          <!-- Información Adicional -->
+          <div style="background: #fef9c3; border-left: 4px solid #eab308; padding: 15px; border-radius: 6px; margin: 25px 0;">
+            <p style="margin: 0; color: #713f12; font-size: 13px; line-height: 1.6;">
+              <strong>⚠️ Importante:</strong> Conserve este correo como comprobante de su postulación. 
+              El código <strong>${postulacionID}</strong> identifica su envío de manera única.
+            </p>
+          </div>
+          
+          <p style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-top: 30px;">
+            Si tiene alguna consulta, no dude en contactarnos.
+          </p>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <p style="color: #374151; font-size: 14px; margin: 0;">Saludos cordiales,</p>
+            <p style="color: #1e3a8a; font-weight: 600; font-size: 14px; margin: 5px 0;">Comité de Excelencia Científica</p>
+            <p style="color: #6b7280; font-size: 13px; margin: 5px 0;">Vicerrectorado de Investigación</p>
+            <p style="color: #6b7280; font-size: 13px; margin: 5px 0;">Universidad Nacional del Centro del Perú</p>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+          <p style="margin: 0;">Este es un mensaje automático, por favor no responda a este correo.</p>
+          <p style="margin: 5px 0 0 0;">© 2025 Universidad Nacional del Centro del Perú</p>
+        </div>
+      </div>
     `;
     
     MailApp.sendEmail({
       to: email,
       subject: subject,
-      body: body
+      htmlBody: htmlBody
     });
     
-    Logger.log('Email de confirmación enviado a: ' + email);
+    return true;
   } catch (error) {
-    Logger.log('Error al enviar email: ' + error.toString());
-    // No lanzar error para no bloquear el guardado
+    console.error('Error enviando email:', error);
+    return false;
   }
 }
 
@@ -400,8 +584,8 @@ function actualizarEstado(rowNumber, nuevoEstado) {
   const ss = SpreadsheetApp.openById(sheetId);
   const sheet = ss.getActiveSheet();
   
-  // Columna 16 = Estado
-  sheet.getRange(rowNumber, 16).setValue(nuevoEstado);
+  // Columna 15 = Estado (con columna ID ahora es la 15)
+  sheet.getRange(rowNumber, 15).setValue(nuevoEstado);
   
   return createResponse(true, 'Estado actualizado correctamente');
 }
@@ -425,6 +609,52 @@ function exportarAExcel() {
 // ============================================
 // UTILIDADES
 // ============================================
+
+/**
+ * Limpia un texto removiendo tildes, espacios y convirtiéndolo a CamelCase
+ */
+function limpiarTexto(texto) {
+  if (!texto) return '';
+  
+  // Remover tildes
+  const sinTildes = texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  
+  // Convertir a CamelCase y remover espacios
+  const palabras = sinTildes.split(/\s+/);
+  const camelCase = palabras
+    .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase())
+    .join('');
+  
+  return camelCase;
+}
+
+/**
+ * Genera el siguiente ID correlativo (p-001, p-002, etc.)
+ */
+function generarSiguienteID(sheet) {
+  const lastRow = sheet.getLastRow();
+  
+  if (lastRow <= 1) {
+    // Primera postulación
+    return 'p-001';
+  }
+  
+  // Obtener el último ID
+  const ultimoID = sheet.getRange(lastRow, 1).getValue();
+  
+  if (!ultimoID || typeof ultimoID !== 'string') {
+    return 'p-001';
+  }
+  
+  // Extraer número del ID (p-001 -> 001)
+  const numero = parseInt(ultimoID.split('-')[1]) || 0;
+  const siguienteNumero = numero + 1;
+  
+  // Formatear con ceros a la izquierda
+  return 'p-' + String(siguienteNumero).padStart(3, '0');
+}
 
 /**
  * Crea una respuesta JSON estandarizada

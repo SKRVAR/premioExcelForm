@@ -5,28 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Postulación Premio Excelencia - UNCP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        * {
+            font-family: 'Poppins', sans-serif;
         }
+        
+        .title-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
         pre {
             white-space: pre-wrap;
             word-break: break-all;
         }
+        
         .hidden {
             display: none;
         }
+        
+        .gradient-gold {
+            background: #d4af37; /* Dorado oscuro institucional */
+        }
+        
+        .border-teal {
+            border-color: rgba(13, 132, 105, 0.6);
+        }
+        
+        .bg-dark-teal {
+            background: rgba(13, 132, 105, 0.05);
+        }
+        
+        .text-gold {
+            color: #d4af37; /* Dorado oscuro institucional */
+        }
+        
+        .btn-gold {
+            background: #d4af37; /* Dorado oscuro institucional */
+            border: 2px solid rgba(13, 132, 105, 0.6);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gold:hover {
+            background: rgba(13, 132, 105, 0.9); /* Verde oscuro institucional */
+            border-color: rgba(13, 132, 105, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 132, 105, 0.4);
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 text-gray-800 flex items-center justify-center min-h-screen p-3 md:p-6">
 
-    <div class="w-full max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <div class="w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 p-4 md:p-6">
         
         <!-- Encabezado -->
-        <div class="text-center mb-6">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Premio Excelencia UNCP</h1>
-            <p class="text-gray-600 mt-2">Formulario de Postulación</p>
+        <div class="text-center mb-5 -mx-4 md:-mx-6 -mt-4 md:-mt-6 px-4 py-5 rounded-t-lg border-b-2 border-teal" style="background: #d4af37;">
+            <h1 class="title-font text-xl md:text-2xl font-bold text-white tracking-tight">II Premio a la Excelencia Científica UNCP 2025</h1>
+            <p class="text-gray-200 mt-1 text-sm font-medium">Formulario de Postulación</p>
         </div>
 
         <!-- CONFIGURACIÓN: Cambiar por tu URL del Web App -->
@@ -36,63 +71,52 @@
         </script>
 
         <!-- SECCIÓN 1: Búsqueda de publicación -->
-        <div id="seccionBusqueda" class="mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800">1. Datos de la Publicación</h2>
+        <div id="seccionBusqueda" class="mb-6">
+            <h2 class="title-font text-lg font-semibold mb-3 text-gray-800 border-l-4 border-teal pl-3">1. Datos de la Publicación</h2>
             
-            <form id="doiForm" class="flex flex-col sm:flex-row gap-3 mb-6">
+            <form id="doiForm" class="flex flex-col sm:flex-row gap-2 mb-4">
                 <input 
                     type="text" 
                     id="doiInput" 
                     placeholder="Ej: 10.1038/s41586-021-03590-y" 
-                    class="flex-grow w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow duration-200" 
+                    class="flex-grow w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200" 
                     required
                 >
                 <button 
                     type="submit" 
-                    class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform duration-200 transform hover:scale-105"
+                    class="btn-gold text-white font-semibold px-5 py-2 text-sm rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                     Obtener Metadatos
                 </button>
             </form>
 
             <!-- Contenedor de Resultados -->
-            <div id="resultado" class="mt-6 space-y-4">
-                <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg">
-                    <p>Los resultados de la búsqueda aparecerán aquí.</p>
+            <div id="resultado" class="mt-4 space-y-3">
+                <div class="text-center text-gray-500 p-6 border border-dashed border-gray-300 rounded bg-gray-50/50">
+                    <p class="text-sm">Los resultados de la búsqueda aparecerán aquí.</p>
                 </div>
             </div>
         </div>
 
         <!-- SECCIÓN 2: Datos del postulante (oculta inicialmente) -->
-        <div id="seccionPostulante" class="hidden mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-t pt-6">2. Datos del Postulante</h2>
+        <div id="seccionPostulante" class="hidden mb-6">
+            <h2 class="title-font text-lg font-semibold mb-3 text-gray-800 border-l-4 border-teal pl-3 border-t pt-4 mt-4">2. Datos del Postulante</h2>
             
-            <form id="formularioPostulacion" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form id="formularioPostulacion" class="space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-medium text-gray-700 mb-1">Nombres *</label>
-                        <input type="text" id="nombres" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombres *</label>
+                        <input type="text" id="nombres" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                     </div>
                     <div>
-                        <label class="block font-medium text-gray-700 mb-1">Apellidos *</label>
-                        <input type="text" id="apellidos" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Apellidos *</label>
+                        <input type="text" id="apellidos" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-medium text-gray-700 mb-1">Email *</label>
-                    <input type="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="ejemplo@uncp.edu.pe">
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-medium text-gray-700 mb-1">Facultad *</label>
-                        <input type="text" id="facultad" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-gray-700 mb-1">Teléfono Celular *</label>
-                        <input type="tel" id="telefono" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="999999999">
-                    </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input type="email" id="email" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="ejemplo@uncp.edu.pe">
                 </div>
 
                 <!-- Campos ocultos para datos de la publicación -->
@@ -105,57 +129,64 @@
                 <input type="hidden" id="publicacionMetadatos">
 
                 <!-- Botones de navegación -->
-                <div class="flex gap-3 pt-6">
+                <div class="flex gap-2 pt-4">
                     <button 
                         type="button"
                         onclick="volverBusqueda()"
-                        class="flex-1 bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-600 transition"
+                        class="flex-1 bg-gray-700 text-white font-medium text-sm px-4 py-2 rounded hover:bg-gray-800 transition border border-gray-600"
                     >
-                        Volver a Búsqueda
+                        Volver
                     </button>
                     <button 
                         type="button"
                         onclick="continuarAutores()"
-                        class="flex-1 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                        class="flex-1 btn-gold text-white font-semibold text-sm px-4 py-2 rounded"
                     >
-                        Continuar →
+                        Continuar
                     </button>
                 </div>
             </form>
         </div>
 
         <!-- SECCIÓN 3: Autores del Artículo (oculta inicialmente) -->
-        <div id="seccionAutores" class="hidden mb-8">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-t pt-6">3. Autores del Artículo</h2>
-            <p class="text-gray-600 mb-4">Para cada autor, indique si su afiliación declarada en el artículo pertenece a la UNCP. Los autores con afiliación UNCP deben adjuntar un documento que verifique su vínculo con la universidad.</p>
+        <div id="seccionAutores" class="hidden mb-6">
+            <h2 class="title-font text-lg font-semibold mb-3 text-gray-800 border-l-4 border-teal pl-3 border-t pt-4 mt-4">3. Autores del Artículo</h2>
+            <div class="bg-dark-teal border border-teal rounded p-3 mb-3">
+                <p class="text-xs text-gray-700 mb-2 font-medium">Para cada autor, indique:</p>
+                <ul class="text-xs text-gray-600 ml-4 space-y-1 list-disc">
+                    <li><span class="font-medium">Afiliación declarada:</span> Institución que aparece en el artículo</li>
+                    <li><span class="font-medium">Vínculo laboral vigente:</span> Relación laboral actual (requiere PDF si es UNCP)</li>
+                    <li><span class="font-medium">Autor corresponsal:</span> Marque si aparece como corresponsal</li>
+                </ul>
+            </div>
             
-            <div id="listaAutores" class="space-y-4">
+            <div id="listaAutores" class="space-y-2">
                 <!-- Los autores se generarán dinámicamente aquí -->
             </div>
 
             <div id="uploadProgress" class="hidden mt-4">
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    <div id="progressBar" class="h-2.5 rounded-full transition-all duration-300" style="width: 0%; background: #d4af37;"></div>
                 </div>
                 <p id="progressText" class="text-sm text-gray-600 mt-1">Preparando...</p>
             </div>
         </div>
 
         <!-- BOTÓN DE ENVÍO FINAL -->
-        <div id="seccionEnvio" class="hidden mb-8">
-            <div class="flex gap-3 pt-4 border-t">
+        <div id="seccionEnvio" class="hidden mb-6">
+            <div class="flex gap-2 pt-3 border-t border-gray-200 mt-4">
                 <button 
                     type="button"
                     onclick="volverDatosPostulante()"
-                    class="flex-1 bg-gray-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-600 transition"
+                    class="flex-1 bg-gray-700 text-white font-medium text-sm px-4 py-2 rounded hover:bg-gray-800 transition border border-gray-600"
                 >
-                    ← Volver
+                    Volver
                 </button>
                 <button 
                     type="button"
                     onclick="enviarPostulacion()"
                     id="btnEnviar"
-                    class="flex-1 bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 transition"
+                    class="flex-1 btn-gold text-white font-semibold text-sm px-4 py-2 rounded"
                 >
                     Enviar Postulación
                 </button>
@@ -163,12 +194,12 @@
         </div>
 
         <!-- Mensaje de éxito -->
-        <div id="mensajeExito" class="hidden bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mt-6">
-            <p class="font-bold">¡Postulación enviada exitosamente! ✓</p>
-            <p class="mt-2">Recibirás una confirmación en tu correo electrónico.</p>
+        <div id="mensajeExito" class="hidden bg-gradient-to-r from-emerald-50 to-teal-50 border-l-4 border-teal text-gray-800 p-4 rounded mt-3">
+            <p class="title-font font-bold text-base">Postulación enviada exitosamente</p>
+            <p class="mt-1.5 text-sm text-gray-700">Recibirá una confirmación en su correo electrónico con los detalles de su postulación.</p>
             <button 
                 onclick="nuevaPostulacion()"
-                class="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                class="mt-3 btn-gold text-white px-4 py-2 text-sm rounded font-medium"
             >
                 Nueva Postulación
             </button>
@@ -245,7 +276,7 @@
         }
 
         /**
-         * Genera la lista de autores con campos de afiliación y PDF
+         * Genera la lista de autores con campos de afiliación declarada, vínculo laboral y autor corresponsal
          */
         function generarListaAutores() {
             const listaAutoresDiv = document.getElementById('listaAutores');
@@ -255,40 +286,88 @@
                 const nombreCompleto = `${autor.given || ''} ${autor.family || ''}`.trim() || 'Autor sin nombre';
                 
                 html += `
-                    <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
+                    <div class="border border-gray-300 rounded bg-white/80 backdrop-blur-sm p-3 hover:shadow-md transition-shadow">
+                        <div class="flex items-start gap-2">
+                            <div class="flex-shrink-0 w-6 h-6 text-white rounded-full flex items-center justify-center text-xs font-bold border border-teal" style="background: #d4af37;">
                                 ${index + 1}
                             </div>
                             <div class="flex-grow">
-                                <h3 class="font-semibold text-gray-800 mb-3">${nombreCompleto}</h3>
+                                <h3 class="title-font font-semibold text-gray-800 mb-2 text-sm">${nombreCompleto}</h3>
                                 
-                                <div class="space-y-3">
+                                <div class="space-y-2">
+                                    <!-- Afiliación declarada en el artículo -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Afiliación declarada en el artículo *</label>
+                                        <label class="block text-xs font-medium text-gray-700 mb-1">
+                                            Afiliación declarada *
+                                        </label>
                                         <select 
-                                            id="afiliacion_${index}" 
-                                            onchange="togglePdfUpload(${index})"
+                                            id="afiliacionDeclarada_${index}" 
+                                            onchange="toggleCamposUNCP(${index})"
                                             required 
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                            class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
                                         >
                                             <option value="">Seleccione...</option>
-                                            <option value="UNCP">UNCP (Universidad Nacional del Centro del Perú)</option>
-                                            <option value="EXTERNO">Externo (otra institución)</option>
+                                            <option value="UNCP">UNCP</option>
+                                            <option value="EXTERNO">Externo</option>
                                         </select>
                                     </div>
                                     
-                                    <div id="pdfContainer_${index}" class="hidden">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                                            Documento de verificación de vínculo con UNCP (PDF) *
-                                        </label>
-                                        <input 
-                                            type="file" 
-                                            id="pdfAutor_${index}" 
-                                            accept=".pdf"
-                                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                        >
-                                        <p class="text-xs text-gray-500 mt-1">Máximo 10 MB. Ej: constancia laboral, resolución, etc.</p>
+                                    <!-- Campos adicionales para UNCP (inicialmente ocultos) -->
+                                    <div id="camposUNCP_${index}" class="hidden space-y-2">
+                                        
+                                        <!-- Vínculo laboral vigente -->
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-700 mb-1">
+                                                Vínculo laboral vigente *
+                                            </label>
+                                            <select 
+                                                id="vinculoLaboral_${index}" 
+                                                onchange="togglePdfUpload(${index})"
+                                                class="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white"
+                                            >
+                                                <option value="">Seleccione...</option>
+                                                <option value="UNCP">UNCP</option>
+                                                <option value="EXTERNO">Externo</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Autor Corresponsal -->
+                                        <div>
+                                            <div class="flex items-start gap-2">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="autorCorresponsal_${index}" 
+                                                    class="mt-0.5 h-3 w-3 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                                                >
+                                                <label for="autorCorresponsal_${index}" class="block text-xs font-medium text-gray-700">
+                                                    Es autor corresponsal
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Campo de PDF para vínculo laboral UNCP -->
+                                        <div id="pdfContainer_${index}" class="hidden">
+                                            <label class="block text-xs font-medium text-gray-700 mb-1">
+                                                Documento de vínculo UNCP (PDF) *
+                                            </label>
+                                            <input 
+                                                type="file" 
+                                                id="pdfAutor_${index}" 
+                                                accept=".pdf"
+                                                class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-medium file:bg-amber-50 file:text-gray-700 hover:file:bg-amber-100"
+                                            >
+                                            <p class="text-xs text-gray-500 mt-0.5">Máx. 10 MB</p>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    <!-- Mensaje para autores externos -->
+                                    <div id="mensajeExterno_${index}" class="hidden">
+                                        <div class="bg-dark-teal border border-teal rounded p-2">
+                                            <p class="text-xs text-gray-700">
+                                                Autor externo - No se requiere información adicional
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -301,14 +380,55 @@
         }
 
         /**
-         * Muestra/oculta el campo de PDF según la afiliación seleccionada
+         * Muestra/oculta campos adicionales según la afiliación declarada
          */
-        window.togglePdfUpload = function(index) {
-            const afiliacion = document.getElementById(`afiliacion_${index}`).value;
+        window.toggleCamposUNCP = function(index) {
+            const afiliacionDeclarada = document.getElementById(`afiliacionDeclarada_${index}`).value;
+            const camposUNCP = document.getElementById(`camposUNCP_${index}`);
+            const mensajeExterno = document.getElementById(`mensajeExterno_${index}`);
+            const vinculoLaboral = document.getElementById(`vinculoLaboral_${index}`);
+            const autorCorresponsal = document.getElementById(`autorCorresponsal_${index}`);
             const pdfContainer = document.getElementById(`pdfContainer_${index}`);
             const pdfInput = document.getElementById(`pdfAutor_${index}`);
             
-            if (afiliacion === 'UNCP') {
+            if (afiliacionDeclarada === 'UNCP') {
+                // Mostrar campos adicionales para UNCP
+                camposUNCP.classList.remove('hidden');
+                mensajeExterno.classList.add('hidden');
+                
+                // Hacer campos requeridos
+                vinculoLaboral.required = true;
+                
+            } else if (afiliacionDeclarada === 'EXTERNO') {
+                // Ocultar campos adicionales y mostrar mensaje
+                camposUNCP.classList.add('hidden');
+                mensajeExterno.classList.remove('hidden');
+                
+                // Limpiar y deshacer campos requeridos
+                vinculoLaboral.value = '';
+                vinculoLaboral.required = false;
+                autorCorresponsal.checked = false;
+                pdfContainer.classList.add('hidden');
+                pdfInput.value = '';
+                pdfInput.required = false;
+                
+            } else {
+                // Si no se ha seleccionado nada, ocultar todo
+                camposUNCP.classList.add('hidden');
+                mensajeExterno.classList.add('hidden');
+                vinculoLaboral.required = false;
+            }
+        };
+
+        /**
+         * Muestra/oculta el campo de PDF según el vínculo laboral seleccionado
+         */
+        window.togglePdfUpload = function(index) {
+            const vinculoLaboral = document.getElementById(`vinculoLaboral_${index}`).value;
+            const pdfContainer = document.getElementById(`pdfContainer_${index}`);
+            const pdfInput = document.getElementById(`pdfAutor_${index}`);
+            
+            if (vinculoLaboral === 'UNCP') {
                 pdfContainer.classList.remove('hidden');
                 pdfInput.required = true;
             } else {
@@ -319,41 +439,139 @@
         };
 
         /**
-         * Valida que el postulante sea uno de los autores UNCP
+         * Muestra ventana de confirmación con resumen de datos
          */
-        function validarPostulanteEsAutorUNCP() {
-            const nombresPostulante = document.getElementById('nombres').value.trim().toLowerCase();
-            const apellidosPostulante = document.getElementById('apellidos').value.trim().toLowerCase();
-            const emailPostulante = document.getElementById('email').value.trim().toLowerCase();
-            
-            let hayAutorUNCPValido = false;
-            
-            autoresArticulo.forEach((autor, index) => {
-                const afiliacion = document.getElementById(`afiliacion_${index}`).value;
+        async function mostrarResumenConfirmacion() {
+            return new Promise((resolve) => {
+                // Recopilar datos para el resumen
+                const titulo = document.getElementById('publicacionTitulo').value;
+                const nombrePostulante = `${document.getElementById('nombres').value} ${document.getElementById('apellidos').value}`;
+                const emailPostulante = document.getElementById('email').value;
                 
-                if (afiliacion === 'UNCP') {
-                    const nombreAutor = (autor.given || '').toLowerCase();
-                    const apellidoAutor = (autor.family || '').toLowerCase();
+                // Generar resumen de autores
+                let resumenAutores = '';
+                autoresArticulo.forEach((autor, index) => {
+                    const nombreCompleto = `${autor.given || ''} ${autor.family || ''}`.trim();
+                    const afiliacionDeclarada = document.getElementById(`afiliacionDeclarada_${index}`).value;
                     
-                    // Verificar si el nombre y apellido coinciden (aproximado)
-                    if (nombreAutor.includes(nombresPostulante) || nombresPostulante.includes(nombreAutor)) {
-                        if (apellidoAutor.includes(apellidosPostulante) || apellidosPostulante.includes(apellidoAutor)) {
-                            hayAutorUNCPValido = true;
+                    let detallesAutor = `<div class="border-l-2 border-teal pl-3 mb-2">
+                        <p class="font-medium text-gray-800 text-sm">${index + 1}. ${nombreCompleto}</p>
+                        <p class="text-xs text-gray-600">Afiliación: <span class="font-medium">${afiliacionDeclarada === 'UNCP' ? 'UNCP' : 'Externa'}</span></p>`;
+                    
+                    if (afiliacionDeclarada === 'UNCP') {
+                        const vinculoLaboral = document.getElementById(`vinculoLaboral_${index}`).value;
+                        const esCorresponsal = document.getElementById(`autorCorresponsal_${index}`).checked;
+                        
+                        detallesAutor += `<p class="text-xs text-gray-600">Vínculo: <span class="font-medium">${vinculoLaboral === 'UNCP' ? 'UNCP' : 'Externo'}</span></p>`;
+                        
+                        if (esCorresponsal) {
+                            detallesAutor += `<p class="text-xs text-amber-700 font-medium">Autor corresponsal</p>`;
+                        }
+                        
+                        if (vinculoLaboral === 'UNCP') {
+                            const pdfFile = document.getElementById(`pdfAutor_${index}`).files[0];
+                            if (pdfFile) {
+                                detallesAutor += `<p class="text-xs text-gray-500">PDF: ${pdfFile.name}</p>`;
+                            }
                         }
                     }
-                }
+                    
+                    detallesAutor += '</div>';
+                    resumenAutores += detallesAutor;
+                });
+                
+                // Crear modal
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+                        <div class="px-5 py-4 border-b-2 border-teal" style="background: #d4af37;">
+                            <h2 class="title-font text-lg font-bold text-white">Confirmación de Postulación</h2>
+                        </div>
+                        <div class="p-5">
+                            <div class="space-y-3">
+                                <!-- Título del artículo -->
+                                <div class="bg-gray-50 border border-gray-200 p-3 rounded">
+                                    <h3 class="title-font font-semibold text-gray-800 mb-1 text-sm">Título del Artículo:</h3>
+                                    <p class="text-gray-700 text-sm">${titulo}</p>
+                                </div>
+                                
+                                <!-- Datos del postulante -->
+                                <div class="bg-dark-teal border border-teal p-3 rounded">
+                                    <h3 class="title-font font-semibold text-gray-800 mb-2 text-sm">Postulante:</h3>
+                                    <p class="text-gray-700 text-xs"><strong>Nombre:</strong> ${nombrePostulante}</p>
+                                    <p class="text-gray-700 text-xs"><strong>Email:</strong> ${emailPostulante}</p>
+                                </div>
+                                
+                                <!-- Autores del artículo -->
+                                <div class="bg-gray-50 border border-gray-200 p-3 rounded">
+                                    <h3 class="title-font font-semibold text-gray-800 mb-2 text-sm">Autores del Artículo:</h3>
+                                    ${resumenAutores}
+                                </div>
+                                
+                                <!-- Advertencia -->
+                                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded">
+                                    <p class="text-xs text-gray-800">
+                                        <span class="font-semibold">Importante:</span> 
+                                        Verifique que todos los datos sean correctos antes de enviar. 
+                                        Una vez enviada, la postulación no podrá ser modificada.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Botones -->
+                            <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+                                <button 
+                                    id="btnCancelar" 
+                                    class="flex-1 px-4 py-2 text-sm bg-gray-700 text-white rounded hover:bg-gray-800 transition border border-gray-600 font-medium"
+                                >
+                                    Cancelar
+                                </button>
+                                <button 
+                                    id="btnConfirmar" 
+                                    class="flex-1 px-4 py-2 text-sm btn-gold text-white rounded font-semibold"
+                                >
+                                    Confirmar Envío
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Event listeners
+                document.getElementById('btnCancelar').onclick = () => {
+                    document.body.removeChild(modal);
+                    resolve(false);
+                };
+                
+                document.getElementById('btnConfirmar').onclick = () => {
+                    document.body.removeChild(modal);
+                    resolve(true);
+                };
+                
+                // Cerrar con ESC
+                const handleEsc = (e) => {
+                    if (e.key === 'Escape') {
+                        document.body.removeChild(modal);
+                        document.removeEventListener('keydown', handleEsc);
+                        resolve(false);
+                    }
+                };
+                document.addEventListener('keydown', handleEsc);
             });
-            
-            return hayAutorUNCPValido;
         }
 
         /**
-         * Valida que al menos un autor tenga afiliación UNCP
+         * Valida que al menos un autor tenga afiliación UNCP o vínculo laboral UNCP
          */
         function validarAlMenosUnAutorUNCP() {
             for (let i = 0; i < autoresArticulo.length; i++) {
-                const afiliacion = document.getElementById(`afiliacion_${i}`).value;
-                if (afiliacion === 'UNCP') {
+                const afiliacionDeclarada = document.getElementById(`afiliacionDeclarada_${i}`).value;
+                const vinculoLaboral = document.getElementById(`vinculoLaboral_${i}`).value;
+                
+                if (afiliacionDeclarada === 'UNCP' || vinculoLaboral === 'UNCP') {
                     return true;
                 }
             }
@@ -383,8 +601,8 @@
             const apiUrl = `https://api.crossref.org/works/${doi}`;
             
             resultadoDiv.innerHTML = `
-                <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
-                    <p>Buscando metadatos...</p>
+                <div class="text-center text-gray-500 p-5 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
+                    <p class="text-sm">Buscando metadatos...</p>
                 </div>`;
 
             fetch(apiUrl)
@@ -403,8 +621,8 @@
                     
                     // VERIFICAR SI EL DOI YA ESTÁ REGISTRADO
                     resultadoDiv.innerHTML = `
-                        <div class="text-center text-gray-500 p-8 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
-                            <p>Verificando disponibilidad del artículo...</p>
+                        <div class="text-center text-gray-500 p-5 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
+                            <p class="text-sm">Verificando disponibilidad del artículo...</p>
                         </div>`;
                     
                     return fetch(GOOGLE_SCRIPT_URL, {
@@ -433,19 +651,19 @@
                         });
                         
                         resultadoDiv.innerHTML = `
-                            <div class="bg-red-50 p-6 rounded-lg border-2 border-red-300">
-                                <div class="flex items-start gap-3 mb-4">
-                                    <svg class="w-8 h-8 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-amber-50 p-4 rounded-lg border-2 border-amber-400">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <svg class="w-7 h-7 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                     </svg>
                                     <div class="flex-grow">
-                                        <h3 class="text-xl font-bold text-red-800 mb-2">⚠️ Artículo ya postulado</h3>
-                                        <p class="text-red-700 mb-4">Este artículo ya ha sido registrado en el sistema y no puede ser postulado nuevamente.</p>
+                                        <h3 class="text-lg font-bold text-amber-900 mb-1">Artículo ya postulado</h3>
+                                        <p class="text-amber-800 text-sm mb-3">Este artículo ya ha sido registrado en el sistema y no puede ser postulado nuevamente.</p>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white rounded-lg p-4 border border-red-200">
-                                    <h4 class="font-semibold text-gray-800 mb-3">📋 Datos de la postulación previa:</h4>
+                                <div class="bg-white rounded-lg p-3 border border-amber-200">
+                                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Datos de la postulación previa:</h4>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                                         <div>
                                             <span class="font-medium text-gray-600">Fecha de postulación:</span>
@@ -463,14 +681,6 @@
                                             <span class="font-medium text-gray-600">Email:</span>
                                             <p class="text-gray-800">${prev.email}</p>
                                         </div>
-                                        <div>
-                                            <span class="font-medium text-gray-600">Facultad:</span>
-                                            <p class="text-gray-800">${prev.facultad}</p>
-                                        </div>
-                                        <div>
-                                            <span class="font-medium text-gray-600">Teléfono:</span>
-                                            <p class="text-gray-800">${prev.telefono}</p>
-                                        </div>
                                         <div class="md:col-span-2">
                                             <span class="font-medium text-gray-600">DOI:</span>
                                             <p class="text-gray-800 break-all">${prev.doi}</p>
@@ -479,25 +689,25 @@
                                             <span class="font-medium text-gray-600">Título:</span>
                                             <p class="text-gray-800">${prev.titulo}</p>
                                         </div>
-                                        ${prev.autoresUNCP ? `
+                                        ${prev.autoresAfiliacionUNCP ? `
                                         <div class="md:col-span-2">
                                             <span class="font-medium text-gray-600">Autores UNCP:</span>
-                                            <p class="text-gray-800">${prev.autoresUNCP}</p>
+                                            <p class="text-gray-800">${prev.autoresAfiliacionUNCP}</p>
                                         </div>
                                         ` : ''}
                                     </div>
                                 </div>
                                 
-                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <p class="text-sm text-blue-800">
-                                        <strong>ℹ️ Nota:</strong> Si cree que esto es un error o necesita actualizar la postulación, 
+                                <div class="mt-3 p-2.5 bg-teal-50 border border-teal-300 rounded-lg">
+                                    <p class="text-xs text-gray-800">
+                                        <strong>Nota:</strong> Si cree que esto es un error o necesita actualizar la postulación, 
                                         por favor contacte al administrador del sistema.
                                     </p>
                                 </div>
                                 
                                 <button 
                                     onclick="location.reload()"
-                                    class="mt-4 w-full bg-gray-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+                                    class="mt-3 w-full bg-gray-700 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-800 transition text-sm"
                                 >
                                     Buscar otro artículo
                                 </button>
@@ -509,34 +719,44 @@
                     // NO HAY DUPLICADO - CONTINUAR NORMALMENTE
                     const metadata = metadatosPublicacion;
                     
+                    // Extraer año de publicación correctamente
+                    let anioPublicacion = '';
+                    if (metadata.published && metadata.published['date-parts'] && metadata.published['date-parts'][0]) {
+                        anioPublicacion = metadata.published['date-parts'][0][0]; // Primer elemento del array es el año
+                    } else if (metadata.issued && metadata.issued['date-parts'] && metadata.issued['date-parts'][0]) {
+                        anioPublicacion = metadata.issued['date-parts'][0][0];
+                    } else if (metadata['published-online'] && metadata['published-online']['date-parts'] && metadata['published-online']['date-parts'][0]) {
+                        anioPublicacion = metadata['published-online']['date-parts'][0][0];
+                    }
+                    
                     // Guardar datos en campos ocultos
                     document.getElementById('publicacionTitulo').value = metadata.title ? metadata.title[0] : '';
                     document.getElementById('publicacionAutores').value = metadata.author ? JSON.stringify(metadata.author) : '';
                     document.getElementById('publicacionDOI').value = doi;
                     document.getElementById('publicacionRevista').value = metadata['container-title'] ? metadata['container-title'][0] : '';
                     document.getElementById('publicacionEditorial').value = metadata.publisher || '';
-                    document.getElementById('publicacionFecha').value = metadata.published ? JSON.stringify(metadata.published) : '';
+                    document.getElementById('publicacionFecha').value = anioPublicacion; // Guardar solo el año
                     document.getElementById('publicacionMetadatos').value = JSON.stringify(metadata);
 
                     const autoresTexto = metadata.author ? metadata.author.map(a => `${a.given || ''} ${a.family || ''}`.trim()).join(', ') : 'N/A';
                     
                     resultadoDiv.innerHTML = `
-                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
-                            <h3 class="text-lg font-bold text-gray-800 mb-3">${metadata.title ? metadata.title[0] : 'Sin título'}</h3>
-                            <p class="text-gray-700 mb-2"><strong>Autores:</strong> ${autoresTexto}</p>
-                            <p class="text-gray-700 mb-2"><strong>Revista:</strong> ${metadata['container-title'] ? metadata['container-title'][0] : 'N/A'}</p>
-                            <p class="text-gray-700 mb-2"><strong>Editorial:</strong> ${metadata.publisher || 'N/A'}</p>
-                            <p class="text-gray-700"><strong>DOI:</strong> <a href="https://doi.org/${doi}" target="_blank" class="text-blue-600 hover:underline">${doi}</a></p>
+                        <div class="bg-teal-50 p-4 rounded-lg border border-teal-300">
+                            <h3 class="text-base font-bold text-gray-800 mb-2">${metadata.title ? metadata.title[0] : 'Sin título'}</h3>
+                            <p class="text-gray-700 mb-1.5 text-sm"><strong>Autores:</strong> ${autoresTexto}</p>
+                            <p class="text-gray-700 mb-1.5 text-sm"><strong>Revista:</strong> ${metadata['container-title'] ? metadata['container-title'][0] : 'N/A'}</p>
+                            <p class="text-gray-700 mb-1.5 text-sm"><strong>Editorial:</strong> ${metadata.publisher || 'N/A'}</p>
+                            <p class="text-gray-700 text-sm"><strong>DOI:</strong> <a href="https://doi.org/${doi}" target="_blank" class="text-teal-700 hover:underline font-medium">${doi}</a></p>
                             
                             <button 
                                 onclick="continuarPostulacion()"
-                                class="mt-4 w-full bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+                                class="mt-3 w-full btn-gold text-white font-semibold px-5 py-2.5 rounded-lg text-sm"
                             >
-                                Continuar con la postulación →
+                                Continuar con la postulación
                             </button>
                         </div>
-                        <details class="mt-4 bg-white rounded-lg p-4 border">
-                            <summary class="cursor-pointer text-blue-600 font-medium hover:underline">Ver todos los metadatos disponibles</summary>
+                        <details class="mt-3 bg-white rounded-lg p-3 border">
+                            <summary class="cursor-pointer text-teal-700 font-medium hover:underline text-sm">Ver todos los metadatos disponibles</summary>
                             <div class="mt-4">
                                 ${renderAllMetadataAsTable(metadata)}
                             </div>
@@ -609,77 +829,145 @@
             const btnEnviar = document.getElementById('btnEnviar');
             
             try {
-                // Validar que todos los autores tengan afiliación seleccionada
+                // Validar que todos los autores tengan afiliación declarada seleccionada
                 for (let i = 0; i < autoresArticulo.length; i++) {
-                    const afiliacion = document.getElementById(`afiliacion_${i}`).value;
-                    if (!afiliacion) {
-                        alert(`Por favor, seleccione la afiliación para el autor ${i + 1}`);
+                    const afiliacionDeclarada = document.getElementById(`afiliacionDeclarada_${i}`).value;
+                    
+                    if (!afiliacionDeclarada) {
+                        alert(`Por favor, seleccione la afiliación declarada para el autor ${i + 1}`);
                         return;
                     }
                     
-                    // Si es UNCP, validar que tenga PDF
-                    if (afiliacion === 'UNCP') {
-                        const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
-                        if (!pdfFile) {
-                            alert(`Por favor, cargue el documento de verificación para el autor ${i + 1} (UNCP)`);
+                    // Solo validar campos adicionales si la afiliación es UNCP
+                    if (afiliacionDeclarada === 'UNCP') {
+                        const vinculoLaboral = document.getElementById(`vinculoLaboral_${i}`).value;
+                        
+                        if (!vinculoLaboral) {
+                            alert(`Por favor, seleccione el vínculo laboral para el autor ${i + 1}`);
                             return;
                         }
-                        if (pdfFile.size > 10 * 1024 * 1024) {
-                            alert(`El PDF del autor ${i + 1} no debe superar 10 MB`);
-                            return;
+                        
+                        // Si tiene vínculo laboral UNCP, validar que tenga PDF
+                        if (vinculoLaboral === 'UNCP') {
+                            const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
+                            if (!pdfFile) {
+                                alert(`Por favor, cargue el documento de verificación de vínculo laboral para el autor ${i + 1} (UNCP)`);
+                                return;
+                            }
+                            if (pdfFile.size > 10 * 1024 * 1024) {
+                                alert(`El PDF del autor ${i + 1} no debe superar 10 MB`);
+                                return;
+                            }
                         }
                     }
                 }
                 
-                // Validar que al menos un autor sea UNCP
+                // Validar que al menos un autor tenga afiliación UNCP o vínculo laboral UNCP
                 if (!validarAlMenosUnAutorUNCP()) {
-                    alert('Debe haber al menos un autor con afiliación UNCP');
+                    alert('Debe haber al menos un autor con afiliación UNCP declarada en el artículo o con vínculo laboral vigente UNCP');
                     return;
                 }
                 
-                // Validar que el postulante sea uno de los autores UNCP
-                if (!validarPostulanteEsAutorUNCP()) {
-                    alert('El postulante debe ser uno de los autores con afiliación UNCP declarada en el artículo. Verifique que su nombre coincida con alguno de los autores UNCP seleccionados.');
-                    return;
+                // Mostrar ventana de confirmación con resumen
+                if (!await mostrarResumenConfirmacion()) {
+                    return; // Usuario canceló
                 }
                 
                 btnEnviar.disabled = true;
                 btnEnviar.textContent = 'Enviando...';
                 
                 document.getElementById('uploadProgress').classList.remove('hidden');
-                document.getElementById('progressText').textContent = 'Procesando archivos...';
+                document.getElementById('progressText').textContent = 'Preparando datos...';
                 
                 // Recopilar datos de autores con sus PDFs
                 const autoresConDatos = [];
                 for (let i = 0; i < autoresArticulo.length; i++) {
                     const autor = autoresArticulo[i];
-                    const afiliacion = document.getElementById(`afiliacion_${i}`).value;
+                    const afiliacionDeclarada = document.getElementById(`afiliacionDeclarada_${i}`).value;
                     
                     const autorData = {
                         nombre: `${autor.given || ''} ${autor.family || ''}`.trim(),
-                        afiliacion: afiliacion,
+                        afiliacionDeclarada: afiliacionDeclarada,
                         datosOriginales: autor
                     };
                     
-                    // Si es UNCP, adjuntar PDF en Base64
-                    if (afiliacion === 'UNCP') {
-                        const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
-                        const pdfBase64 = await fileToBase64(pdfFile);
-                        autorData.pdfVerificacion = pdfBase64.split(',')[1]; // Remover prefijo
-                        autorData.pdfFileName = `autor_${i + 1}_${Date.now()}_${pdfFile.name}`;
+                    // Solo procesar campos adicionales si la afiliación es UNCP
+                    if (afiliacionDeclarada === 'UNCP') {
+                        const vinculoLaboral = document.getElementById(`vinculoLaboral_${i}`).value;
+                        const esAutorCorresponsal = document.getElementById(`autorCorresponsal_${i}`).checked;
+                        
+                        autorData.vinculoLaboral = vinculoLaboral;
+                        autorData.esAutorCorresponsal = esAutorCorresponsal;
+                        
+                        // Si tiene vínculo laboral UNCP, subir PDF primero
+                        if (vinculoLaboral === 'UNCP') {
+                            const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
+                            
+                            if (pdfFile) {
+                                document.getElementById('progressText').textContent = `Subiendo PDF del autor ${i + 1}...`;
+                                
+                                try {
+                                    // Añadir pequeño delay entre uploads para evitar problemas
+                                    if (i > 0) {
+                                        await new Promise(resolve => setTimeout(resolve, 1000));
+                                    }
+                                    
+                                    const pdfBase64 = await fileToBase64(pdfFile);
+                                    const fileName = `autor_${i + 1}_${Date.now()}_${pdfFile.name}`;
+                                    
+                                    console.log(`Iniciando subida de ${fileName} (${pdfFile.size} bytes)`);
+                                    
+                                    // Subir PDF individualmente
+                                    const uploadResponse = await fetch(GOOGLE_SCRIPT_URL, {
+                                        method: 'POST',
+                                        body: JSON.stringify({
+                                            action: 'uploadFile',
+                                            fileData: pdfBase64.split(',')[1], // Remover prefijo data:
+                                            fileName: fileName
+                                        }),
+                                        headers: {
+                                            'Content-Type': 'text/plain;charset=utf-8',
+                                        }
+                                    });
+                                    
+                                    console.log(`Response status: ${uploadResponse.status}`);
+                                    
+                                    if (!uploadResponse.ok) {
+                                        throw new Error(`Error HTTP ${uploadResponse.status}: ${uploadResponse.statusText}`);
+                                    }
+                                    
+                                    const uploadResult = await uploadResponse.json();
+                                    console.log('Upload result:', uploadResult);
+                                    
+                                    if (uploadResult.success) {
+                                        autorData.pdfId = uploadResult.data.fileId;
+                                        autorData.pdfUrl = uploadResult.data.fileUrl;
+                                        autorData.pdfFileName = uploadResult.data.fileName;
+                                        console.log(`PDF ${i + 1} subido correctamente: ${uploadResult.data.fileId}`);
+                                    } else {
+                                        throw new Error(`Error al subir PDF: ${uploadResult.message}`);
+                                    }
+                                } catch (uploadError) {
+                                    console.error(`Error completo autor ${i + 1}:`, uploadError);
+                                    throw new Error(`Error al subir PDF del autor ${i + 1}: ${uploadError.message}`);
+                                }
+                            }
+                        }
+                    } else {
+                        // Para autores externos, establecer valores predeterminados
+                        autorData.vinculoLaboral = 'EXTERNO';
+                        autorData.esAutorCorresponsal = false;
                     }
                     
                     autoresConDatos.push(autorData);
                 }
                 
-                // Preparar datos completos
+                // Preparar datos completos (sin los PDFs en Base64, solo las referencias)
                 const formData = {
                     action: 'submitForm',
                     nombres: document.getElementById('nombres').value,
                     apellidos: document.getElementById('apellidos').value,
                     email: document.getElementById('email').value,
-                    facultad: document.getElementById('facultad').value,
-                    telefono: document.getElementById('telefono').value,
                     publicacion: {
                         titulo: document.getElementById('publicacionTitulo').value,
                         autores: autoresConDatos,
