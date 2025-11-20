@@ -74,11 +74,24 @@
         <div id="seccionBusqueda" class="mb-6">
             <h2 class="title-font text-lg font-semibold mb-3 text-gray-800 border-l-4 border-teal pl-3">1. Datos de la Publicación</h2>
             
+            <!-- Información sobre el DOI -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <div class="flex gap-2">
+                    <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0zM8 8a1 1 0 000 2h6a1 1 0 000-2H8zm0 3a1 1 0 000 2h3a1 1 0 000-2H8z" clip-rule="evenodd" />
+                    </svg>
+                    <div class="flex-grow">
+                        <p class="text-sm font-semibold text-blue-900 mb-1">Ingrese el DOI del artículo</p>
+                        <p class="text-xs text-blue-800">El DOI (Identificador de Objeto Digital) es un código único que identifica su artículo científico. Al ingresarlo, el sistema obtendrá automáticamente todos los metadatos: título, autores, revista, editorial y fecha de publicación.</p>
+                    </div>
+                </div>
+            </div>
+            
             <form id="doiForm" class="flex flex-col sm:flex-row gap-2 mb-4">
                 <input 
                     type="text" 
                     id="doiInput" 
-                    placeholder="Ej: 10.1038/s41586-021-03590-y" 
+                    placeholder="Ej: 10.1038/s41586-021-03590-y o 10.1145/3456789" 
                     class="flex-grow w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all duration-200" 
                     required
                 >
