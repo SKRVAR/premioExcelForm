@@ -141,7 +141,7 @@
                         required
                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-amber-50 file:text-gray-700 hover:file:bg-amber-100"
                     >
-                    <p class="text-xs text-gray-500 mt-1">Máximo 10 MB. Este documento será renombrado como {ID}_dj.pdf</p>
+                    <p class="text-xs text-gray-500 mt-1">Máximo 10 MB.</p>
                 </div>
 
                 <!-- Campos ocultos para datos de la publicación -->
@@ -182,7 +182,7 @@
                 <p class="text-xs text-gray-700 mb-2 font-medium">Para cada autor, indique:</p>
                 <ul class="text-xs text-gray-600 ml-4 space-y-1 list-disc">
                     <li><span class="font-medium">Afiliación declarada:</span> Institución que aparece en el artículo</li>
-                    <li><span class="font-medium">Vínculo laboral vigente:</span> Relación laboral actual (requiere PDF si es UNCP)</li>
+                    <li><span class="font-medium">Vínculo con la UNCP vigente:</span> Relación actual con la UNCP (requiere PDF si es UNCP, Resolución, contrato, ficha de matrícula)</li>
                     <li><span class="font-medium">Autor corresponsal:</span> Marque si aparece como corresponsal</li>
                 </ul>
             </div>
@@ -191,12 +191,6 @@
                 <!-- Los autores se generarán dinámicamente aquí -->
             </div>
 
-            <div id="uploadProgress" class="hidden mt-4">
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div id="progressBar" class="h-2.5 rounded-full transition-all duration-300" style="width: 0%; background: #d4af37;"></div>
-                </div>
-                <p id="progressText" class="text-sm text-gray-600 mt-1">Preparando...</p>
-            </div>
         </div>
 
         <!-- BOTÓN DE ENVÍO FINAL -->
@@ -234,10 +228,67 @@
 
     </div>
 
+    <!-- Modal de progreso centrado -->
+    <div id="modalProgreso" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+            <div class="text-center">
+                <!-- Ícono animado -->
+                <div class="mx-auto w-16 h-16 mb-4 relative">
+                    <svg class="animate-spin h-16 w-16 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                
+                <!-- Título -->
+                <h3 class="title-font text-xl font-bold text-gray-800 mb-2">Enviando Postulación</h3>
+                <p id="progressText" class="text-sm text-gray-600 mb-4">Preparando datos...</p>
+                
+                <!-- Barra de progreso -->
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-2 overflow-hidden">
+                    <div id="progressBar" class="h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%; background: linear-gradient(90deg, #d4af37 0%, #f59e0b 100%);"></div>
+                </div>
+                <p id="progressPercent" class="text-xs text-gray-500 font-medium">0%</p>
+                
+                <!-- Mensaje informativo -->
+                <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p class="text-xs text-blue-800">
+                        <strong>Por favor espere.</strong> No cierre ni actualice esta ventana.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Variable global para almacenar los metadatos completos
         let metadatosPublicacion = null;
         let autoresArticulo = [];
+
+        /**
+         * Muestra el modal de progreso
+         */
+        function mostrarModalProgreso(mensaje = 'Preparando...', porcentaje = 0) {
+            document.getElementById('modalProgreso').classList.remove('hidden');
+            actualizarProgreso(mensaje, porcentaje);
+        }
+
+        /**
+         * Oculta el modal de progreso
+         */
+        function ocultarModalProgreso() {
+            document.getElementById('modalProgreso').classList.add('hidden');
+            actualizarProgreso('Preparando...', 0);
+        }
+
+        /**
+         * Actualiza el texto y porcentaje del progreso
+         */
+        function actualizarProgreso(mensaje, porcentaje) {
+            document.getElementById('progressText').textContent = mensaje;
+            document.getElementById('progressBar').style.width = porcentaje + '%';
+            document.getElementById('progressPercent').textContent = porcentaje + '%';
+        }
 
         /**
          * Formatea un valor para mostrarlo en la tabla
@@ -339,13 +390,28 @@
                                         </select>
                                     </div>
                                     
+                                    <!-- Autor Corresponsal (Visible para TODOS los autores) -->
+                                    <div>
+                                        <div class="flex items-start gap-2">
+                                            <input 
+                                                type="checkbox" 
+                                                id="autorCorresponsal_${index}" 
+                                                onchange="manejarSeleccionCorresponsal(${index})"
+                                                class="mt-0.5 h-3 w-3 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+                                            >
+                                            <label for="autorCorresponsal_${index}" class="block text-xs font-medium text-gray-700">
+                                                Es autor corresponsal
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- Campos adicionales para UNCP (inicialmente ocultos) -->
                                     <div id="camposUNCP_${index}" class="hidden space-y-2">
                                         
                                         <!-- Vínculo laboral vigente -->
                                         <div>
                                             <label class="block text-xs font-medium text-gray-700 mb-1">
-                                                Vínculo laboral vigente *
+                                                Vínculo con la UNCP vigente *
                                             </label>
                                             <select 
                                                 id="vinculoLaboral_${index}" 
@@ -356,20 +422,6 @@
                                                 <option value="UNCP">UNCP</option>
                                                 <option value="EXTERNO">Externo</option>
                                             </select>
-                                        </div>
-                                        
-                                        <!-- Autor Corresponsal -->
-                                        <div>
-                                            <div class="flex items-start gap-2">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="autorCorresponsal_${index}" 
-                                                    class="mt-0.5 h-3 w-3 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
-                                                >
-                                                <label for="autorCorresponsal_${index}" class="block text-xs font-medium text-gray-700">
-                                                    Es autor corresponsal
-                                                </label>
-                                            </div>
                                         </div>
                                         
                                         <!-- Campo de PDF para vínculo laboral UNCP -->
@@ -414,7 +466,6 @@
             const camposUNCP = document.getElementById(`camposUNCP_${index}`);
             const mensajeExterno = document.getElementById(`mensajeExterno_${index}`);
             const vinculoLaboral = document.getElementById(`vinculoLaboral_${index}`);
-            const autorCorresponsal = document.getElementById(`autorCorresponsal_${index}`);
             const pdfContainer = document.getElementById(`pdfContainer_${index}`);
             const pdfInput = document.getElementById(`pdfAutor_${index}`);
             
@@ -434,10 +485,10 @@
                 // Limpiar y deshacer campos requeridos
                 vinculoLaboral.value = '';
                 vinculoLaboral.required = false;
-                autorCorresponsal.checked = false;
                 pdfContainer.classList.add('hidden');
                 pdfInput.value = '';
                 pdfInput.required = false;
+                // NO limpiar el checkbox de corresponsal - puede ser cualquier autor
                 
             } else {
                 // Si no se ha seleccionado nada, ocultar todo
@@ -603,6 +654,54 @@
                 }
             }
             return false;
+        }
+
+        /**
+         * Valida que al menos un autor esté marcado como corresponsal
+         */
+        function validarAlMenosUnCorresponsal() {
+            for (let i = 0; i < autoresArticulo.length; i++) {
+                const esCorresponsal = document.getElementById(`autorCorresponsal_${i}`);
+                if (esCorresponsal && esCorresponsal.checked) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Verifica si hay al menos un corresponsal marcado y oculta la advertencia si existe
+         */
+        function verificarYOcultarAdvertenciaCorresponsal() {
+            if (validarAlMenosUnCorresponsal()) {
+                const advertenciaExistente = document.getElementById('advertenciaCorresponsal');
+                if (advertenciaExistente) {
+                    advertenciaExistente.remove();
+                }
+            }
+        }
+
+        /**
+         * Maneja la selección exclusiva de autor corresponsal
+         * Solo un autor puede ser corresponsal a la vez
+         */
+        function manejarSeleccionCorresponsal(indexSeleccionado) {
+            const checkboxSeleccionado = document.getElementById(`autorCorresponsal_${indexSeleccionado}`);
+            
+            // Si se marcó este checkbox, desmarcar todos los demás
+            if (checkboxSeleccionado && checkboxSeleccionado.checked) {
+                for (let i = 0; i < autoresArticulo.length; i++) {
+                    if (i !== indexSeleccionado) {
+                        const otroCheckbox = document.getElementById(`autorCorresponsal_${i}`);
+                        if (otroCheckbox) {
+                            otroCheckbox.checked = false;
+                        }
+                    }
+                }
+            }
+            
+            // Verificar si se debe ocultar la advertencia
+            verificarYOcultarAdvertenciaCorresponsal();
         }
 
         // Manejo de búsqueda DOI
@@ -881,7 +980,7 @@
                         const vinculoLaboral = document.getElementById(`vinculoLaboral_${i}`).value;
                         
                         if (!vinculoLaboral) {
-                            alert(`Por favor, seleccione el vínculo laboral para el autor ${i + 1}`);
+                            alert(`Por favor, seleccione el vínculo con la UNCP para el autor ${i + 1}`);
                             return;
                         }
                         
@@ -889,7 +988,7 @@
                         if (vinculoLaboral === 'UNCP') {
                             const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
                             if (!pdfFile) {
-                                alert(`Por favor, cargue el documento de verificación de vínculo laboral para el autor ${i + 1} (UNCP)`);
+                                alert(`Por favor, cargue el documento de verificación de vínculo con la UNCP para el autor ${i + 1} (UNCP)`);
                                 return;
                             }
                             if (pdfFile.size > 10 * 1024 * 1024) {
@@ -902,8 +1001,41 @@
                 
                 // Validar que al menos un autor tenga afiliación UNCP o vínculo laboral UNCP
                 if (!validarAlMenosUnAutorUNCP()) {
-                    alert('Debe haber al menos un autor con afiliación UNCP declarada en el artículo o con vínculo laboral vigente UNCP');
+                    alert('Debe haber al menos un autor con afiliación UNCP declarada en el artículo o con vínculo vigente con la UNCP');
                     return;
+                }
+                
+                // Validar que al menos un autor esté marcado como corresponsal
+                if (!validarAlMenosUnCorresponsal()) {
+                    // Mostrar advertencia visual
+                    const advertenciaDiv = document.getElementById('advertenciaCorresponsal');
+                    if (!advertenciaDiv) {
+                        const nuevaAdvertencia = document.createElement('div');
+                        nuevaAdvertencia.id = 'advertenciaCorresponsal';
+                        nuevaAdvertencia.className = 'bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4';
+                        nuevaAdvertencia.innerHTML = `
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                <div class="flex-grow">
+                                    <h3 class="text-base font-bold text-red-900 mb-1">Autor Corresponsal Requerido</h3>
+                                    <p class="text-red-800 text-sm">Toda publicación científica debe tener al menos un <strong>autor corresponsal</strong>. Por favor, marque al menos un autor como corresponsal antes de enviar la postulación.</p>
+                                </div>
+                            </div>
+                        `;
+                        document.getElementById('listaAutores').insertAdjacentElement('beforebegin', nuevaAdvertencia);
+                        
+                        // Scroll hacia la advertencia
+                        nuevaAdvertencia.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
+                
+                // Remover advertencia si existe
+                const advertenciaExistente = document.getElementById('advertenciaCorresponsal');
+                if (advertenciaExistente) {
+                    advertenciaExistente.remove();
                 }
                 
                 // Mostrar ventana de confirmación con resumen
@@ -914,8 +1046,7 @@
                 btnEnviar.disabled = true;
                 btnEnviar.textContent = 'Enviando...';
                 
-                document.getElementById('uploadProgress').classList.remove('hidden');
-                document.getElementById('progressText').textContent = 'Subiendo Declaración Jurada...';
+                mostrarModalProgreso('Subiendo Declaración Jurada...', 10);
                 
                 // Subir PDF de Declaración Jurada primero (temporal, se renombrará después)
                 try {
@@ -952,7 +1083,7 @@
                     throw new Error(`Error al subir Declaración Jurada: ${uploadError.message}`);
                 }
                 
-                document.getElementById('progressText').textContent = 'Preparando datos...';
+                actualizarProgreso('Preparando datos de autores...', 25);
                 
                 // Recopilar datos de autores con sus PDFs
                 const autoresConDatos = [];
@@ -979,7 +1110,8 @@
                             const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
                             
                             if (pdfFile) {
-                                document.getElementById('progressText').textContent = `Subiendo PDF del autor ${i + 1}...`;
+                                const progresoAutor = 25 + Math.floor((i + 1) / autoresConDatos.length * 40);
+                                actualizarProgreso(`Subiendo PDF del autor ${i + 1} de ${autoresConDatos.length}...`, progresoAutor);
                                 
                                 try {
                                     // Añadir pequeño delay entre uploads para evitar problemas
@@ -1059,7 +1191,7 @@
                 };
                 
                 // Enviar a Google Apps Script
-                document.getElementById('progressText').textContent = 'Enviando datos al servidor...';
+                actualizarProgreso('Guardando postulación en el servidor...', 70);
                 
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -1072,21 +1204,26 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Mostrar éxito
+                    actualizarProgreso('¡Postulación completada!', 100);
+                    
+                    // Esperar un momento para que se vea el 100%
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    
+                    // Ocultar modal y mostrar éxito
+                    ocultarModalProgreso();
                     document.getElementById('seccionAutores').classList.add('hidden');
                     document.getElementById('seccionEnvio').classList.add('hidden');
                     document.getElementById('mensajeExito').classList.remove('hidden');
-                    document.getElementById('uploadProgress').classList.add('hidden');
                 } else {
                     throw new Error(result.message || 'Error desconocido');
                 }
                 
             } catch (error) {
                 console.error('Error:', error);
+                ocultarModalProgreso();
                 alert('Error al enviar la postulación: ' + error.message);
                 btnEnviar.disabled = false;
                 btnEnviar.textContent = 'Enviar Postulación';
-                document.getElementById('uploadProgress').classList.add('hidden');
             }
         };
 
