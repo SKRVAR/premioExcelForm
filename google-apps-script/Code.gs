@@ -29,9 +29,10 @@ function inicializarProyecto() {
   
   // Configurar encabezados
   const headers = [
-    'Fecha Postulación', 'Nombres', 'Apellidos', 'Email', 'DOI', 'Título',
-    'Autores', 'Afiliaciones', 'Vínculos', 'Corresponsales',
-    'Año Publicación', 'Enlaces PDFs', 'PDF IDs',
+    'ID', 'Fecha Postulación', 'Nombres', 'Apellidos', 'Email', 
+    'PDF Declaración Jurada', 'PDF DJ ID',
+    'DOI', 'Título', 'Autores', 'Afiliaciones', 'Vínculos', 'Corresponsales',
+    'Año Publicación', 'Enlaces PDFs Autores', 'PDF IDs Autores',
     'Estado', 'Observaciones'
   ];
   
@@ -127,11 +128,11 @@ function checkDuplicateDOI(data) {
     const dataRange = sheet.getDataRange();
     const values = dataRange.getValues();
     
-    // Buscar DOI duplicado (columna F = índice 5, ahora con columna ID)
+    // Buscar DOI duplicado (columna H = índice 7, con ID y columnas DJ)
     // Empezar desde la fila 2 (índice 1) para saltar encabezados
     for (let i = 1; i < values.length; i++) {
-      const rowDOI = values[i][5]; // Columna DOI (índice 5)
-      const rowTitulo = values[i][6]; // Columna Título (índice 6)
+      const rowDOI = values[i][7]; // Columna DOI (índice 7)
+      const rowTitulo = values[i][8]; // Columna Título (índice 8)
       
       // Verificar si el DOI coincide o el título es muy similar
       if (rowDOI && (rowDOI.toLowerCase() === doi.toLowerCase() || 
@@ -146,10 +147,10 @@ function checkDuplicateDOI(data) {
             nombres: values[i][2],
             apellidos: values[i][3],
             email: values[i][4],
-            doi: values[i][5],
-            titulo: values[i][6],
-            autores: values[i][7], // Autores (índice 7)
-            estado: values[i][14] // Estado (índice 14)
+            doi: values[i][7],
+            titulo: values[i][8],
+            autores: values[i][9], // Autores (índice 9)
+            estado: values[i][16] // Estado (índice 16)
           }
         });
       }
@@ -248,9 +249,10 @@ function handleFormSubmission(data) {
     // Configurar encabezados si es la primera vez
     if (sheet.getLastRow() === 0) {
       const headers = [
-        'ID', 'Fecha Postulación', 'Nombres', 'Apellidos', 'Email', 'DOI', 'Título',
-        'Autores', 'Afiliaciones', 'Vínculos', 'Corresponsales',
-        'Año Publicación', 'Enlaces PDFs', 'PDF IDs',
+        'ID', 'Fecha Postulación', 'Nombres', 'Apellidos', 'Email', 
+        'PDF Declaración Jurada', 'PDF DJ ID',
+        'DOI', 'Título', 'Autores', 'Afiliaciones', 'Vínculos', 'Corresponsales',
+        'Año Publicación', 'Enlaces PDFs Autores', 'PDF IDs Autores',
         'Estado', 'Observaciones'
       ];
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -264,6 +266,31 @@ function handleFormSubmission(data) {
     const apellidosLimpios = limpiarTexto(data.apellidos);
     const nombreCarpeta = `${postulacionID}_${apellidosLimpios}_${timestamp}`;
     const subcarpeta = carpetaPrincipal.createFolder(nombreCarpeta);
+    
+    // Procesar PDF de Declaración Jurada
+    let pdfDJUrl = 'ninguno';
+    let pdfDJId = 'ninguno';
+    
+    if (data.pdfDeclaracionJurada && data.pdfDeclaracionJurada.fileId) {
+      try {
+        const fileDJ = DriveApp.getFileById(data.pdfDeclaracionJurada.fileId);
+        const nuevoNombreDJ = `${postulacionID}_dj.pdf`;
+        
+        // Renombrar y mover a la subcarpeta
+        fileDJ.setName(nuevoNombreDJ);
+        fileDJ.moveTo(subcarpeta);
+        
+        // Actualizar URL e ID
+        pdfDJUrl = fileDJ.getUrl();
+        pdfDJId = data.pdfDeclaracionJurada.fileId;
+        
+        Logger.log(`PDF Declaración Jurada procesado: ${nuevoNombreDJ}`);
+      } catch (djError) {
+        Logger.log(`Error procesando PDF DJ: ${djError.toString()}`);
+        pdfDJUrl = 'error';
+        pdfDJId = 'error';
+      }
+    }
     
     // Extraer datos de publicación (vienen en data.publicacion)
     const publicacion = data.publicacion || {};
@@ -355,13 +382,15 @@ function handleFormSubmission(data) {
     // Obtener año de publicación (ya viene como año simple desde el frontend)
     const anio = publicacion.fecha || '';
     
-    // Preparar datos para insertar (16 columnas - ID es la primera)
+    // Preparar datos para insertar (18 columnas - ID es la primera)
     const rowData = [
       postulacionID, // ID
       new Date(), // Fecha Postulación
       data.nombres || '', // Nombres
       data.apellidos || '', // Apellidos
       data.email || '', // Email
+      pdfDJUrl, // PDF Declaración Jurada
+      pdfDJId, // PDF DJ ID
       publicacion.doi || '', // DOI
       publicacion.titulo || '', // Título
       autoresString, // Autores
@@ -369,8 +398,8 @@ function handleFormSubmission(data) {
       vinculosString, // Vínculos
       corresponsalesString, // Corresponsales
       anio, // Año Publicación
-      enlacesPDFsString, // Enlaces PDFs
-      pdfIDsString, // PDF IDs
+      enlacesPDFsString, // Enlaces PDFs Autores
+      pdfIDsString, // PDF IDs Autores
       'Pendiente', // Estado
       '' // Observaciones
     ];
@@ -379,9 +408,16 @@ function handleFormSubmission(data) {
     const nuevaFila = sheet.getLastRow() + 1;
     sheet.appendRow(rowData);
     
-    // Formatear la columna de Enlaces PDFs con hipérvínculos separados
+    // Formatear la columna del PDF de Declaración Jurada como hipervínculo
+    if (pdfDJUrl !== 'ninguno' && pdfDJUrl !== 'error') {
+      const columnaDJ = 6; // Columna F (PDF Declaración Jurada)
+      const celdaDJ = sheet.getRange(nuevaFila, columnaDJ);
+      celdaDJ.setFormula(`=HYPERLINK("${pdfDJUrl}"; "${postulacionID}_dj.pdf")`);
+    }
+    
+    // Formatear la columna de Enlaces PDFs Autores con hipérvínculos separados
     if (enlacesPDFsArray.length > 0) {
-      const columnaEnlacesPDFs = 13; // Columna M (Enlaces PDFs)
+      const columnaEnlacesPDFs = 15; // Columna O (Enlaces PDFs Autores)
       const celda = sheet.getRange(nuevaFila, columnaEnlacesPDFs);
       
       // Crear fórmula con hipérvínculos separados por saltos de línea
@@ -584,8 +620,8 @@ function actualizarEstado(rowNumber, nuevoEstado) {
   const ss = SpreadsheetApp.openById(sheetId);
   const sheet = ss.getActiveSheet();
   
-  // Columna 15 = Estado (con columna ID ahora es la 15)
-  sheet.getRange(rowNumber, 15).setValue(nuevoEstado);
+  // Columna 17 = Estado (con columnas ID y DJ ahora es la 17)
+  sheet.getRange(rowNumber, 17).setValue(nuevoEstado);
   
   return createResponse(true, 'Estado actualizado correctamente');
 }
