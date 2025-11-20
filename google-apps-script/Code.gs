@@ -415,28 +415,25 @@ function handleFormSubmission(data) {
       celdaDJ.setFormula(`=HYPERLINK("${pdfDJUrl}"; "${postulacionID}_dj.pdf")`);
     }
     
-    // Formatear la columna de Enlaces PDFs Autores con hipérvínculos separados
+    // Formatear la columna de Enlaces PDFs Autores con formato simple: a1_ninguno; a2_enlace; etc.
     if (enlacesPDFsArray.length > 0) {
       const columnaEnlacesPDFs = 15; // Columna O (Enlaces PDFs Autores)
       const celda = sheet.getRange(nuevaFila, columnaEnlacesPDFs);
       
-      // Crear fórmula con hipérvínculos separados por saltos de línea
-      let formulas = [];
+      // Crear lista simple con prefijo a1_, a2_, etc.
+      let enlaces = [];
       enlacesPDFsArray.forEach((url, idx) => {
+        const prefijo = `a${idx + 1}_`;
         if (url !== 'ninguno' && url !== 'error') {
-          const nombreAutor = autoresArray[idx] || `Autor ${idx + 1}`;
-          formulas.push(`HYPERLINK("${url}"; "PDF ${idx + 1} - ${nombreAutor}")`);
+          enlaces.push(`${prefijo}${url}`);
         } else {
-          formulas.push(`"${url}"`);
+          enlaces.push(`${prefijo}${url}`);
         }
       });
       
-      if (formulas.length > 0) {
-        // Usar CHAR(10) para saltos de línea dentro de la celda
-        const formula = formulas.join(' & CHAR(10) & ');
-        celda.setFormula(`=${formula}`);
-        celda.setWrap(true); // Habilitar ajuste de texto
-      }
+      // Unir con punto y coma
+      celda.setValue(enlaces.join('; '));
+      celda.setWrap(true); // Habilitar ajuste de texto
     }
     
     // Enviar email de confirmación

@@ -141,7 +141,7 @@
                         required
                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500 file:mr-2 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-amber-50 file:text-gray-700 hover:file:bg-amber-100"
                     >
-                    <p class="text-xs text-gray-500 mt-1">Máximo 10 MB. Anexo 03 de las bases del evento, disponible en las bases del concurso. <a href="recursos/anexoIII_prmExcelencia.docx" download class="text-blue-600 hover:text-blue-800 hover:underline font-medium">Click aquí para descargar el Anexo 03</a></p>
+                    <p class="text-xs text-gray-500 mt-1">Máximo 10 MB. Anexo 03 de las bases del evento. <a href="recursos/anexoIII_prmExcelencia.docx" download class="text-blue-600 hover:text-blue-800 hover:underline font-medium">Click aquí para descargar el Anexo 03</a></p>
                 </div>
 
                 <!-- Campos ocultos para datos de la publicación -->
@@ -1053,7 +1053,9 @@
                     const pdfBase64 = await fileToBase64(pdfDeclaracionJurada);
                     const tempFileName = `temp_dj_${Date.now()}.pdf`;
                     
-                    const uploadResponse = await fetch(GOOGLE_SCRIPT_URL, {
+                    console.log(`Subiendo DJ: ${tempFileName}, Tamaño: ${(pdfBase64.length / 1024).toFixed(2)} KB`);
+                    
+                    const uploadResponse = await fetchConTimeout(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         body: JSON.stringify({
                             action: 'uploadFile',
@@ -1063,13 +1065,16 @@
                         headers: {
                             'Content-Type': 'text/plain;charset=utf-8',
                         }
-                    });
+                    }, 90000, 2); // 90 segundos, 2 intentos
                     
                     if (!uploadResponse.ok) {
-                        throw new Error(`Error HTTP ${uploadResponse.status}: ${uploadResponse.statusText}`);
+                        const errorText = await uploadResponse.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`Error HTTP ${uploadResponse.status}: ${errorText}`);
                     }
                     
                     const uploadResult = await uploadResponse.json();
+                    console.log('DJ Upload result:', uploadResult);
                     
                     if (uploadResult.success) {
                         document.getElementById('pdfDeclaracionJuradaId').value = uploadResult.data.fileId;
@@ -1079,8 +1084,8 @@
                         throw new Error(`Error al subir PDF: ${uploadResult.message}`);
                     }
                 } catch (uploadError) {
-                    console.error('Error al subir Declaración Jurada:', uploadError);
-                    throw new Error(`Error al subir Declaración Jurada: ${uploadError.message}`);
+                    console.error('Error completo al subir Declaración Jurada:', uploadError);
+                    throw new Error(`Error al subir Declaración Jurada: ${uploadError.message}. Por favor, intente con un archivo más pequeño o verifique su conexión.`);
                 }
                 
                 actualizarProgreso('Preparando datos de autores...', 25);
@@ -1090,42 +1095,42 @@
                 for (let i = 0; i < autoresArticulo.length; i++) {
                     const autor = autoresArticulo[i];
                     const afiliacionDeclarada = document.getElementById(`afiliacionDeclarada_${i}`).value;
+                    const esAutorCorresponsal = document.getElementById(`autorCorresponsal_${i}`).checked;
                     
                     const autorData = {
                         nombre: `${autor.given || ''} ${autor.family || ''}`.trim(),
                         afiliacionDeclarada: afiliacionDeclarada,
+                        esAutorCorresponsal: esAutorCorresponsal,
                         datosOriginales: autor
                     };
                     
                     // Solo procesar campos adicionales si la afiliación es UNCP
                     if (afiliacionDeclarada === 'UNCP') {
                         const vinculoLaboral = document.getElementById(`vinculoLaboral_${i}`).value;
-                        const esAutorCorresponsal = document.getElementById(`autorCorresponsal_${i}`).checked;
                         
                         autorData.vinculoLaboral = vinculoLaboral;
-                        autorData.esAutorCorresponsal = esAutorCorresponsal;
                         
                         // Si tiene vínculo laboral UNCP, subir PDF primero
                         if (vinculoLaboral === 'UNCP') {
                             const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
                             
                             if (pdfFile) {
-                                const progresoAutor = 25 + Math.floor((i + 1) / autoresConDatos.length * 40);
-                                actualizarProgreso(`Subiendo PDF del autor ${i + 1} de ${autoresConDatos.length}...`, progresoAutor);
+                                const progresoAutor = 25 + Math.floor((i + 1) / autoresArticulo.length * 40);
+                                actualizarProgreso(`Subiendo PDF del autor ${i + 1} de ${autoresArticulo.length}...`, progresoAutor);
                                 
                                 try {
-                                    // Añadir pequeño delay entre uploads para evitar problemas
+                                    // Añadir delay más largo entre uploads para evitar sobrecarga
                                     if (i > 0) {
-                                        await new Promise(resolve => setTimeout(resolve, 1000));
+                                        await new Promise(resolve => setTimeout(resolve, 2000));
                                     }
                                     
                                     const pdfBase64 = await fileToBase64(pdfFile);
                                     const fileName = `autor_${i + 1}_${Date.now()}_${pdfFile.name}`;
                                     
-                                    console.log(`Iniciando subida de ${fileName} (${pdfFile.size} bytes)`);
+                                    console.log(`Subiendo PDF autor ${i + 1}: ${fileName}, Tamaño: ${(pdfFile.size / 1024).toFixed(2)} KB`);
                                     
-                                    // Subir PDF individualmente
-                                    const uploadResponse = await fetch(GOOGLE_SCRIPT_URL, {
+                                    // Subir PDF individualmente con timeout y reintentos
+                                    const uploadResponse = await fetchConTimeout(GOOGLE_SCRIPT_URL, {
                                         method: 'POST',
                                         body: JSON.stringify({
                                             action: 'uploadFile',
@@ -1135,12 +1140,14 @@
                                         headers: {
                                             'Content-Type': 'text/plain;charset=utf-8',
                                         }
-                                    });
+                                    }, 90000, 2); // 90 segundos, 2 intentos
                                     
-                                    console.log(`Response status: ${uploadResponse.status}`);
+                                    console.log(`Response status autor ${i + 1}: ${uploadResponse.status}`);
                                     
                                     if (!uploadResponse.ok) {
-                                        throw new Error(`Error HTTP ${uploadResponse.status}: ${uploadResponse.statusText}`);
+                                        const errorText = await uploadResponse.text();
+                                        console.error(`Error response autor ${i + 1}:`, errorText);
+                                        throw new Error(`Error HTTP ${uploadResponse.status}: ${errorText}`);
                                     }
                                     
                                     const uploadResult = await uploadResponse.json();
@@ -1161,9 +1168,8 @@
                             }
                         }
                     } else {
-                        // Para autores externos, establecer valores predeterminados
+                        // Para autores externos, solo establecer vínculo como EXTERNO
                         autorData.vinculoLaboral = 'EXTERNO';
-                        autorData.esAutorCorresponsal = false;
                     }
                     
                     autoresConDatos.push(autorData);
@@ -1237,6 +1243,36 @@
                 reader.onerror = error => reject(error);
                 reader.readAsDataURL(file);
             });
+        }
+
+        /**
+         * Fetch con timeout y reintentos
+         */
+        async function fetchConTimeout(url, options, timeoutMs = 60000, intentos = 2) {
+            for (let intento = 1; intento <= intentos; intento++) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                    
+                    const response = await fetch(url, {
+                        ...options,
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    return response;
+                    
+                } catch (error) {
+                    console.log(`Intento ${intento} falló:`, error.message);
+                    
+                    if (intento === intentos) {
+                        throw new Error(`Error después de ${intentos} intentos: ${error.message}`);
+                    }
+                    
+                    // Esperar antes de reintentar
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+            }
         }
     </script>
 
