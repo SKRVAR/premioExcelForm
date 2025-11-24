@@ -704,12 +704,8 @@
             verificarYOcultarAdvertenciaCorresponsal();
         }
 
-        // ==================================================================
-        // FUNCIONES PARA BÚSQUEDA DE DOI EN MÚLTIPLES FUENTES
-        // ==================================================================
-
         /**
-         * Busca metadatos del DOI en múltiples fuentes: Crossref, DataCite, OpenAlex
+         * Busca metadatos del DOI en múltiples fuentes
          */
         async function buscarMetadatosDOI(doi) {
             // 1. Intentar con Crossref
@@ -769,15 +765,31 @@
                 console.log('OpenAlex falló:', error.message);
             }
             
+            // 4. Verificar si el DOI es accesible
+            try {
+                const doiUrl = `https://doi.org/${doi}`;
+                const response = await fetch(doiUrl, { method: 'HEAD', redirect: 'follow' });
+                
+                if (response.ok) {
+                    return {
+                        success: false,
+                        doiExists: true,
+                        message: 'El DOI existe pero no se pudieron obtener metadatos automáticamente'
+                    };
+                }
+            } catch (error) {
+                console.log('Verificación DOI falló:', error.message);
+            }
+            
             return {
                 success: false,
                 doiExists: false,
-                message: 'No se pudo encontrar el DOI en ninguna fuente (Crossref, DataCite, OpenAlex)'
+                message: 'No se pudo encontrar el DOI en ninguna fuente'
             };
         }
 
         /**
-         * Normaliza metadatos de Crossref
+         * Normaliza metadatos de Crossref al formato estándar
          */
         function normalizarMetadatosCrossref(data) {
             return {
@@ -793,10 +805,12 @@
         }
 
         /**
-         * Normaliza metadatos de DataCite
+         * Normaliza metadatos de DataCite al formato estándar
          */
         function normalizarMetadatosDataCite(data) {
             const attrs = data.attributes || {};
+            
+            // Convertir autores de DataCite al formato Crossref
             const autores = (attrs.creators || []).map(creator => ({
                 given: creator.givenName || '',
                 family: creator.familyName || creator.name || '',
@@ -816,9 +830,10 @@
         }
 
         /**
-         * Normaliza metadatos de OpenAlex
+         * Normaliza metadatos de OpenAlex al formato estándar
          */
         function normalizarMetadatosOpenAlex(data) {
+            // Convertir autores de OpenAlex al formato Crossref
             const autores = (data.authorships || []).map(authorship => {
                 const author = authorship.author || {};
                 const displayName = author.display_name || '';
@@ -849,7 +864,7 @@
         }
 
         /**
-         * Extrae el año de publicación
+         * Extrae el año de publicación de metadatos Crossref
          */
         function extraerAnioPublicacion(metadata) {
             if (metadata.published && metadata.published['date-parts'] && metadata.published['date-parts'][0]) {
@@ -863,7 +878,7 @@
         }
 
         /**
-         * Muestra formulario para ingreso manual
+         * Muestra formulario para ingreso manual de metadatos
          */
         function mostrarFormularioManual(doi) {
             return `
@@ -874,7 +889,7 @@
                         </svg>
                         <div class="flex-grow">
                             <h3 class="font-bold text-amber-900 mb-1">No se pudieron obtener metadatos automáticamente</h3>
-                            <p class="text-sm text-amber-800 mb-2">El DOI no se encontró en Crossref, DataCite ni OpenAlex. Por favor, ingrese manualmente los datos:</p>
+                            <p class="text-sm text-amber-800 mb-2">Ingrese manualmente los datos de la publicación:</p>
                         </div>
                     </div>
                 </div>
@@ -884,29 +899,35 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">DOI *</label>
                         <input type="text" id="manualDOI" value="${doi}" readonly class="w-full px-3 py-2 text-sm border border-gray-300 rounded bg-gray-50">
                     </div>
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Título del Artículo *</label>
-                        <textarea id="manualTitulo" required rows="2" class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="Título completo"></textarea>
+                        <textarea id="manualTitulo" required rows="2" class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="Título completo del artículo"></textarea>
                     </div>
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Autores (uno por línea) *</label>
-                        <textarea id="manualAutores" required rows="4" class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="Nombre Apellido&#10;Otro Autor"></textarea>
+                        <textarea id="manualAutores" required rows="4" class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="Nombre Apellido&#10;Otro Autor&#10;..."></textarea>
                         <p class="text-xs text-gray-500 mt-1">Ingrese cada autor en una línea separada</p>
                     </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Revista *</label>
-                            <input type="text" id="manualRevista" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500">
+                            <input type="text" id="manualRevista" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="Nombre de la revista">
                         </div>
+                        
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Editorial *</label>
-                            <input type="text" id="manualEditorial" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500">
+                            <input type="text" id="manualEditorial" required class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="Nombre de la editorial">
                         </div>
                     </div>
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Año de Publicación *</label>
                         <input type="number" id="manualAnio" required min="1900" max="2100" class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-amber-500" placeholder="2024">
                     </div>
+                    
                     <div class="flex gap-2 pt-2">
                         <button type="button" onclick="location.reload()" class="flex-1 bg-gray-700 text-white font-medium px-4 py-2 text-sm rounded hover:bg-gray-800 transition">
                             Buscar otro DOI
@@ -920,10 +941,11 @@
         }
 
         /**
-         * Procesa datos manuales
+         * Procesa los datos manuales ingresados
          */
         function procesarDatosManual(doi) {
             const form = document.getElementById('formManual');
+            
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 
@@ -933,6 +955,7 @@
                 const editorial = document.getElementById('manualEditorial').value.trim();
                 const anio = document.getElementById('manualAnio').value.trim();
                 
+                // Convertir texto de autores a formato estructurado
                 const autoresLineas = autoresTexto.split('\n').filter(line => line.trim());
                 const autores = autoresLineas.map(linea => {
                     const partes = linea.trim().split(' ');
@@ -942,6 +965,7 @@
                     };
                 });
                 
+                // Crear objeto de metadatos normalizado
                 const metadata = {
                     titulo: titulo,
                     autores: autores,
@@ -969,7 +993,7 @@
         }
 
         /**
-         * Verifica duplicados y muestra resultado
+         * Verifica si el DOI está duplicado y muestra el resultado
          */
         async function verificarDuplicadoYMostrarResultado(doi, titulo, metadata, fuente) {
             const resultadoDiv = document.getElementById('resultado');
@@ -1001,12 +1025,12 @@
                 }
             } catch (error) {
                 console.error('Error al verificar duplicado:', error);
-                alert('Error al verificar disponibilidad. Por favor intente nuevamente.');
+                alert('Error al verificar disponibilidad del artículo. Por favor intente nuevamente.');
             }
         }
 
         /**
-         * Muestra artículo duplicado
+         * Muestra mensaje de artículo duplicado
          */
         function mostrarArticuloDuplicado(prev) {
             const resultadoDiv = document.getElementById('resultado');
@@ -1026,31 +1050,70 @@
                         </svg>
                         <div class="flex-grow">
                             <h3 class="text-lg font-bold text-amber-900 mb-1">Artículo ya postulado</h3>
-                            <p class="text-amber-800 text-sm mb-3">Este artículo ya ha sido registrado y no puede postularse nuevamente.</p>
+                            <p class="text-amber-800 text-sm mb-3">Este artículo ya ha sido registrado en el sistema y no puede ser postulado nuevamente.</p>
                         </div>
                     </div>
+                    
                     <div class="bg-white rounded-lg p-3 border border-amber-200">
-                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">Postulación previa:</h4>
+                        <h4 class="font-semibold text-gray-800 mb-2 text-sm">Datos de la postulación previa:</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                            <div><span class="font-medium text-gray-600">Fecha:</span><p class="text-gray-800">${fechaFormateada}</p></div>
-                            <div><span class="font-medium text-gray-600">Estado:</span><p class="text-gray-800"><span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">${prev.estado || 'Pendiente'}</span></p></div>
-                            <div><span class="font-medium text-gray-600">Postulante:</span><p class="text-gray-800">${prev.nombres} ${prev.apellidos}</p></div>
-                            <div><span class="font-medium text-gray-600">Email:</span><p class="text-gray-800">${prev.email}</p></div>
-                            <div class="md:col-span-2"><span class="font-medium text-gray-600">DOI:</span><p class="text-gray-800 break-all">${prev.doi}</p></div>
-                            <div class="md:col-span-2"><span class="font-medium text-gray-600">Título:</span><p class="text-gray-800">${prev.titulo}</p></div>
+                            <div>
+                                <span class="font-medium text-gray-600">Fecha de postulación:</span>
+                                <p class="text-gray-800">${fechaFormateada}</p>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-600">Estado:</span>
+                                <p class="text-gray-800"><span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">${prev.estado || 'Pendiente'}</span></p>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-600">Postulante:</span>
+                                <p class="text-gray-800">${prev.nombres} ${prev.apellidos}</p>
+                            </div>
+                            <div>
+                                <span class="font-medium text-gray-600">Email:</span>
+                                <p class="text-gray-800">${prev.email}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <span class="font-medium text-gray-600">DOI:</span>
+                                <p class="text-gray-800 break-all">${prev.doi}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <span class="font-medium text-gray-600">Título:</span>
+                                <p class="text-gray-800">${prev.titulo}</p>
+                            </div>
+                            ${prev.autoresAfiliacionUNCP ? `
+                            <div class="md:col-span-2">
+                                <span class="font-medium text-gray-600">Autores UNCP:</span>
+                                <p class="text-gray-800">${prev.autoresAfiliacionUNCP}</p>
+                            </div>
+                            ` : ''}
                         </div>
                     </div>
-                    <button onclick="location.reload()" class="mt-3 w-full bg-gray-700 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-800 transition text-sm">Buscar otro artículo</button>
+                    
+                    <div class="mt-3 p-2.5 bg-teal-50 border border-teal-300 rounded-lg">
+                        <p class="text-xs text-gray-800">
+                            <strong>Nota:</strong> Si cree que esto es un error o necesita actualizar la postulación, 
+                            por favor contacte al administrador del sistema.
+                        </p>
+                    </div>
+                    
+                    <button 
+                        onclick="location.reload()"
+                        class="mt-3 w-full bg-gray-700 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-800 transition text-sm"
+                    >
+                        Buscar otro artículo
+                    </button>
                 </div>
             `;
         }
 
         /**
-         * Muestra resultado exitoso
+         * Muestra resultado exitoso con los metadatos encontrados
          */
         function mostrarResultadoExitoso(metadata, fuente) {
             const resultadoDiv = document.getElementById('resultado');
             
+            // Guardar datos en campos ocultos
             document.getElementById('publicacionTitulo').value = metadata.titulo;
             document.getElementById('publicacionAutores').value = JSON.stringify(metadata.autores);
             document.getElementById('publicacionDOI').value = metadata.doi;
@@ -1068,33 +1131,34 @@
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
                         <div class="flex-grow">
-                            <p class="text-xs text-teal-700 font-medium mb-1">Metadatos desde: <span class="font-bold">${fuente}</span></p>
+                            <p class="text-xs text-teal-700 font-medium mb-1">Metadatos obtenidos desde: <span class="font-bold">${fuente}</span></p>
                         </div>
                     </div>
+                    
                     <h3 class="text-base font-bold text-gray-800 mb-2">${metadata.titulo || 'Sin título'}</h3>
                     <p class="text-gray-700 mb-1.5 text-sm"><strong>Autores:</strong> ${autoresTexto}</p>
                     <p class="text-gray-700 mb-1.5 text-sm"><strong>Revista:</strong> ${metadata.revista || 'N/A'}</p>
                     <p class="text-gray-700 mb-1.5 text-sm"><strong>Editorial:</strong> ${metadata.editorial || 'N/A'}</p>
                     <p class="text-gray-700 mb-1.5 text-sm"><strong>Año:</strong> ${metadata.fecha || 'N/A'}</p>
                     <p class="text-gray-700 text-sm"><strong>DOI:</strong> <a href="https://doi.org/${metadata.doi}" target="_blank" class="text-teal-700 hover:underline font-medium">${metadata.doi}</a></p>
-                    <button onclick="continuarPostulacion()" class="mt-3 w-full btn-gold text-white font-semibold px-5 py-2.5 rounded-lg text-sm">Continuar con la postulación</button>
+                    
+                    <button 
+                        onclick="continuarPostulacion()"
+                        class="mt-3 w-full btn-gold text-white font-semibold px-5 py-2.5 rounded-lg text-sm"
+                    >
+                        Continuar con la postulación
+                    </button>
                 </div>
                 <details class="mt-3 bg-white rounded-lg p-3 border">
-                    <summary class="cursor-pointer text-teal-700 font-medium hover:underline text-sm">Ver metadatos completos</summary>
-                    <div class="mt-4">${renderAllMetadataAsTable(metadata.metadatosOriginales)}</div>
+                    <summary class="cursor-pointer text-teal-700 font-medium hover:underline text-sm">Ver todos los metadatos disponibles</summary>
+                    <div class="mt-4">
+                        ${renderAllMetadataAsTable(metadata.metadatosOriginales)}
+                    </div>
                 </details>
             `;
         }
 
-        window.mostrarFormularioManualDirecto = function(doi) {
-            const resultadoDiv = document.getElementById('resultado');
-            resultadoDiv.innerHTML = mostrarFormularioManual(doi);
-            procesarDatosManual(doi);
-        };
-
-        // ==================================================================
-        // MANEJO DE BÚSQUEDA DOI
-        // ==================================================================
+        // Manejo de búsqueda DOI
         document.getElementById('doiForm').addEventListener('submit', async function(event) {
             event.preventDefault();
 
@@ -1108,7 +1172,7 @@
                 resultadoDiv.innerHTML = `
                     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
                         <p class="font-bold">DOI no válido</p>
-                        <p>Formato correcto: 10.xxxx/xxxxx</p>
+                        <p>Asegúrate de que tenga el formato correcto (ej: 10.xxxx/xxxxx).</p>
                     </div>`;
                 return;
             }
@@ -1118,52 +1182,207 @@
             resultadoDiv.innerHTML = `
                 <div class="text-center text-gray-500 p-5 border-2 border-dashed border-gray-200 rounded-lg animate-pulse">
                     <p class="text-sm font-medium mb-2">Buscando metadatos en múltiples fuentes...</p>
-                    <p class="text-xs text-gray-400">Cross ref → DataCite → OpenAlex</p>
+                    <p class="text-xs text-gray-400">Intentando Crossref → DataCite → OpenAlex</p>
                 </div>`;
 
             try {
                 const resultado = await buscarMetadatosDOI(doi);
                 
                 if (resultado.success) {
+                    // Se encontraron metadatos
                     metadatosPublicacion = resultado.metadata.metadatosOriginales;
                     autoresArticulo = resultado.metadata.autores;
+                    
                     verificarDuplicadoYMostrarResultado(doi, resultado.metadata.titulo, resultado.metadata, resultado.source);
-                } else {
+                    
+                } else if (resultado.doiExists) {
+                    // El DOI existe pero no hay metadatos
                     resultadoDiv.innerHTML = `
-                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-4">
+                            <div class="flex gap-2 mb-2">
+                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <h3 class="font-bold text-blue-900 text-sm">DOI encontrado</h3>
+                                    <p class="text-xs text-blue-800 mt-1">El DOI <code class="bg-blue-100 px-1 rounded">${doi}</code> es válido y accesible, pero no se pudieron obtener metadatos automáticamente desde las fuentes disponibles (Crossref, DataCite, OpenAlex).</p>
+                                </div>
+                            </div>
+                        </div>
+                        ${mostrarFormularioManual(doi)}
+                    `;
+                    procesarDatosManual(doi);
+                    
+                } else {
+                    // El DOI no existe en ninguna parte
+                    resultadoDiv.innerHTML = `
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg" role="alert">
                             <div class="flex gap-2">
                                 <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                                 </svg>
                                 <div class="flex-grow">
                                     <p class="font-bold text-red-900">DOI no encontrado</p>
-                                    <p class="text-sm text-red-800 mt-1">El DOI <code class="bg-red-100 px-1 rounded">${doi}</code> no se encontró en Crossref, DataCite ni OpenAlex.</p>
+                                    <p class="text-sm text-red-800 mt-1">El DOI <code class="bg-red-100 px-1 rounded">${doi}</code> no se encontró en ninguna fuente (Crossref, DataCite, OpenAlex) y tampoco es accesible vía https://doi.org/</p>
                                     <div class="mt-3 p-2 bg-red-100 rounded text-xs">
                                         <p class="font-semibold mb-1">Posibles razones:</p>
                                         <ul class="list-disc list-inside space-y-0.5 ml-2">
-                                            <li>DOI incompleto o con errores</li>
-                                            <li>Artículo no publicado oficialmente</li>
-                                            <li>DOI no registrado correctamente</li>
+                                            <li>El DOI está incompleto o tiene errores tipográficos</li>
+                                            <li>El artículo aún no ha sido publicado oficialmente</li>
+                                            <li>El DOI no ha sido registrado correctamente</li>
                                         </ul>
                                     </div>
                                     <div class="mt-3 flex gap-2">
-                                        <button onclick="location.reload()" class="flex-1 bg-red-700 text-white px-3 py-2 text-xs rounded hover:bg-red-800 transition font-medium">Verificar DOI</button>
-                                        <button onclick="mostrarFormularioManualDirecto('${doi}')" class="flex-1 bg-gray-700 text-white px-3 py-2 text-xs rounded hover:bg-gray-800 transition font-medium">Ingresar manualmente</button>
+                                        <button onclick="location.reload()" class="flex-1 bg-red-700 text-white px-3 py-2 text-xs rounded hover:bg-red-800 transition font-medium">
+                                            Verificar DOI
+                                        </button>
+                                        <button onclick="mostrarFormularioManualDirecto('${doi}')" class="flex-1 bg-gray-700 text-white px-3 py-2 text-xs rounded hover:bg-gray-800 transition font-medium">
+                                            Ingresar datos manualmente
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `;
                 }
+                
             } catch (error) {
                 console.error('Error:', error);
                 resultadoDiv.innerHTML = `
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
-                        <p class="font-bold">Error al buscar</p>
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                        <p class="font-bold">Error al buscar el DOI</p>
                         <p class="text-sm">${error.message}</p>
                     </div>`;
             }
         });
+
+        /**
+         * Muestra el formulario manual directamente desde un botón
+         */
+        window.mostrarFormularioManualDirecto = function(doi) {
+            const resultadoDiv = document.getElementById('resultado');
+            resultadoDiv.innerHTML = mostrarFormularioManual(doi);
+            procesarDatosManual(doi);
+        };
+
+        // Continuar con el código existente para verificación de duplicados
+        async function continuarConVerificacion(checkResult) {
+                    if (checkResult.data && checkResult.data.isDuplicate) {
+                        // EL ARTÍCULO YA FUE POSTULADO
+                        const prev = checkResult.data.postulacionPrevia;
+                        const fechaFormateada = new Date(prev.fecha).toLocaleDateString('es-PE', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        resultadoDiv.innerHTML = `
+                            <div class="bg-amber-50 p-4 rounded-lg border-2 border-amber-400">
+                                <div class="flex items-start gap-3 mb-3">
+                                    <svg class="w-7 h-7 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                    <div class="flex-grow">
+                                        <h3 class="text-lg font-bold text-amber-900 mb-1">Artículo ya postulado</h3>
+                                        <p class="text-amber-800 text-sm mb-3">Este artículo ya ha sido registrado en el sistema y no puede ser postulado nuevamente.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg p-3 border border-amber-200">
+                                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Datos de la postulación previa:</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <span class="font-medium text-gray-600">Fecha de postulación:</span>
+                                            <p class="text-gray-800">${fechaFormateada}</p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Estado:</span>
+                                            <p class="text-gray-800"><span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">${prev.estado || 'Pendiente'}</span></p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Postulante:</span>
+                                            <p class="text-gray-800">${prev.nombres} ${prev.apellidos}</p>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600">Email:</span>
+                                            <p class="text-gray-800">${prev.email}</p>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium text-gray-600">DOI:</span>
+                                            <p class="text-gray-800 break-all">${prev.doi}</p>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium text-gray-600">Título:</span>
+                                            <p class="text-gray-800">${prev.titulo}</p>
+                                        </div>
+                                        ${prev.autoresAfiliacionUNCP ? `
+                                        <div class="md:col-span-2">
+                                            <span class="font-medium text-gray-600">Autores UNCP:</span>
+                                            <p class="text-gray-800">${prev.autoresAfiliacionUNCP}</p>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3 p-2.5 bg-teal-50 border border-teal-300 rounded-lg">
+                                    <p class="text-xs text-gray-800">
+                                        <strong>Nota:</strong> Si cree que esto es un error o necesita actualizar la postulación, 
+                                        por favor contacte al administrador del sistema.
+                                    </p>
+                                </div>
+                                
+                                <button 
+                                    onclick="location.reload()"
+                                    class="mt-3 w-full bg-gray-700 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-gray-800 transition text-sm"
+                                >
+                                    Buscar otro artículo
+                                </button>
+                            </div>
+                        `;
+                        return; // Detener el flujo
+                    }
+                    
+                    // NO HAY DUPLICADO - CONTINUAR NORMALMENTE
+                    const metadata = metadatosPublicacion;
+                    
+                    // Extraer año de publicación correctamente
+                    let anioPublicacion = '';
+                    if (metadata.published && metadata.published['date-parts'] && metadata.published['date-parts'][0]) {
+                        anioPublicacion = metadata.published['date-parts'][0][0]; // Primer elemento del array es el año
+                    } else if (metadata.issued && metadata.issued['date-parts'] && metadata.issued['date-parts'][0]) {
+                        anioPublicacion = metadata.issued['date-parts'][0][0];
+                    } else if (metadata['published-online'] && metadata['published-online']['date-parts'] && metadata['published-online']['date-parts'][0]) {
+                        anioPublicacion = metadata['published-online']['date-parts'][0][0];
+                    }
+                    
+                    // Guardar datos en campos ocultos
+                    document.getElementById('publicacionTitulo').value = metadata.title ? metadata.title[0] : '';
+                    document.getElementById('publicacionAutores').value = metadata.author ? JSON.stringify(metadata.author) : '';
+                    document.getElementById('publicacionDOI').value = doi;
+                    document.getElementById('publicacionRevista').value = metadata['container-title'] ? metadata['container-title'][0] : '';
+                    document.getElementById('publicacionEditorial').value = metadata.publisher || '';
+                    document.getElementById('publicacionFecha').value = anioPublicacion; // Guardar solo el año
+                    document.getElementById('publicacionMetadatos').value = JSON.stringify(metadata);
+
+                    const autoresTexto = metadata.author ? metadata.author.map(a => `${a.given || ''} ${a.family || ''}`.trim()).join(', ') : 'N/A';
+                    
+                    resultadoDiv.innerHTML = `
+                        <div class="bg-teal-50 p-4 rounded-lg border border-teal-300">
+                            <h3 class="text-base font-bold text-gray-800 mb-2">${metadata.title ? metadata.title[0] : 'Sin título'}</h3>
+                            <p class="text-gray-700 mb-1.5 text-sm"><strong>Autores:</strong> ${autoresTexto}</p>
+                            <p class="text-gray-700 mb-1.5 text-sm"><strong>Revista:</strong> ${metadata['container-title'] ? metadata['container-title'][0] : 'N/A'}</p>
+                            <p class="text-gray-700 mb-1.5 text-sm"><strong>Editorial:</strong> ${metadata.publisher || 'N/A'}</p>
+                            <p class="text-gray-700 text-sm"><strong>DOI:</strong> <a href="https://doi.org/${doi}" target="_blank" class="text-teal-700 hover:underline font-medium">${doi}</a></p>
+                            
+                            <button 
+                                onclick="continuarPostulacion()"
+                                class="mt-3 w-full btn-gold text-white font-semibold px-5 py-2.5 rounded-lg text-sm"
+                            >
+                                Continuar con la postulación
+                            </button>
+
 
         // Funciones de navegación
         window.continuarPostulacion = function() {
