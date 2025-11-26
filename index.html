@@ -475,7 +475,7 @@
                         </div>
                     </details>
                     
-                    <details class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
+                    <details id="faq-vinculo" class="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer hover:shadow-md transition group">
                         <summary class="font-bold text-gray-800 text-lg flex justify-between items-center">
                             ¿Qué tipo de vínculo con la UNCP se acepta?
                             <span class="transition group-open:rotate-180">▼</span>
@@ -486,10 +486,13 @@
                                 <li><strong>Docentes investigadores:</strong> Contrato laboral vigente o resolución de nombramiento</li>
                                 <li><strong>Estudiantes de pregrado:</strong> Ficha de matrícula actual o constancia de inscripción vigente</li>
                                 <li><strong>Estudiantes de posgrado:</strong> Resolución de inscripción o constancia de matrícula del programa</li>
-                                <li><strong>Personal administrativo:</strong> Contrato laboral vigente o resolución de designación</li>
-                                <li><strong>Investigadores externos afiliados:</strong> Documento oficial que certifique su vinculación con UNCP</li>
+                                <li><strong>Personal administrativo:</strong> Contrato laboral vigente o resolución de designación</li>                                
                             </ul>
-                            <p class="mt-3 text-sm font-semibold">La participación es abierta a cualquier persona con vínculo vigente con la UNCP, independientemente de su categoría laboral o académica.</p>
+                            <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                                <p class="text-sm text-blue-900">
+                                    <strong>Nota importante:</strong> Es posible postular artículos con autores institucionales (UNCP) y externos, pero la premiación solo se otorgará a los autores que declaren filiación UNCP en el artículo y demuestren vínculo laboral o académico vigente con la UNCP.
+                                </p>
+                            </div>                            
                         </div>
                     </details>
                     
@@ -499,14 +502,14 @@
                             <span class="transition group-open:rotate-180">▼</span>
                         </summary>
                         <div class="mt-4 text-gray-600 pl-4 border-l-4 border-purple-300">
-                            <p>Se otorgará una resolución de ameritamiento y un kit investigador, el cual se otorgará únicamente a los autores que cumplan los siguientes <strong>requisitos</strong>:</p>
+                            <p>Se otorgará una resolución de ameritamiento y un kit investigador, únicamente a los autores que cumplan los siguientes <strong>requisitos</strong>:</p>
                             <ul class="mt-3 space-y-2 list-decimal list-inside">
                                 <li><strong>Filiación declarada en el artículo:</strong> Haber declarado afiliación con la UNCP al momento de publicar el artículo. Esto debe constar explícitamente en el texto completo de la publicación indexada en Scopus.</li>
-                                <li><strong>Vínculo vigente comprobado:</strong> Tener vínculo laboral o académico vigente con la UNCP al momento de postular, comprobado mediante documento sustentatorio (contrato, resolución, ficha de matrícula u otro documento oficial).</li>
+                                <li><strong>Vínculo vigente comprobado:</strong> Tener vínculo laboral o académico vigente con la UNCP al momento de postular, comprobado mediante documento sustentatorio (contrato, resolución, ficha de matrícula).</li>
                             </ul>
                             <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
                                 <p class="text-sm text-blue-900">
-                                    <strong>Nota importante:</strong> Es posible postular artículos con autores institucionales (UNCP) y externos, pero la premiación solo se otorgará a los autores que declaren filiación UNCP en el artículo y demuestren vínculo vigente con la institución.
+                                    <strong>Nota importante:</strong> Es posible postular artículos con autores institucionales (UNCP) y externos, pero la premiación solo se otorgará a los autores que declaren filiación UNCP en el artículo y demuestren vínculo laboral o académico vigente con la UNCP.
                                 </p>
                             </div>
                         </div>
@@ -683,6 +686,23 @@
                 const targetTab = button.getAttribute('data-tab');
                 showTab(targetTab);
             });
+        });
+
+        // Manejar hash en la URL para abrir FAQ específica
+        window.addEventListener('load', () => {
+            if (window.location.hash === '#faq-vinculo') {
+                showTab('faq');
+                setTimeout(() => {
+                    const element = document.getElementById('faq-vinculo');
+                    if (element) {
+                        element.open = true;
+                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Efecto visual para resaltar
+                        element.classList.add('ring-2', 'ring-yellow-400');
+                        setTimeout(() => element.classList.remove('ring-2', 'ring-yellow-400'), 2000);
+                    }
+                }, 300);
+            }
         });
     </script>
 </body>

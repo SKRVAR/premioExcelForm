@@ -182,7 +182,7 @@
                 <p class="text-xs text-gray-700 mb-2 font-medium">Para cada autor, indique:</p>
                 <ul class="text-xs text-gray-600 ml-4 space-y-1 list-disc">
                     <li><span class="font-medium">Afiliación declarada:</span> Institución que aparece en el artículo</li>
-                    <li><span class="font-medium">Vínculo con la UNCP vigente:</span> Relación actual con la UNCP (requiere PDF si es UNCP, Resolución, contrato, ficha de matrícula)</li>
+                    <li><span class="font-medium">Vínculo con la UNCP vigente:</span> Relación actual con la UNCP (adjuntar PDF si es UNCP: Resolución, contrato, ficha de matrícula - Opcional)</li>
                     <li><span class="font-medium">Autor corresponsal:</span> Marque si aparece como corresponsal</li>
                 </ul>
             </div>
@@ -376,7 +376,7 @@
                                     <!-- Afiliación declarada en el artículo -->
                                     <div>
                                         <label class="block text-xs font-medium text-gray-700 mb-1">
-                                            Afiliación declarada *
+                                            Afiliación declarada en el Artículo *
                                         </label>
                                         <select 
                                             id="afiliacionDeclarada_${index}" 
@@ -427,7 +427,10 @@
                                         <!-- Campo de PDF para vínculo laboral UNCP -->
                                         <div id="pdfContainer_${index}" class="hidden">
                                             <label class="block text-xs font-medium text-gray-700 mb-1">
-                                                Documento de vínculo UNCP (PDF) *
+                                                Documento de vínculo UNCP (PDF) (Opcional, se solicitará en fases posteriores)
+                                                <a href="index.html#faq-vinculo" target="_blank" class="ml-1 text-blue-600 hover:text-blue-800 hover:underline font-normal" title="Ver tipos de documentos aceptados">
+                                                    (¿Qué documentos se aceptan?)
+                                                </a>
                                             </label>
                                             <input 
                                                 type="file" 
@@ -508,7 +511,7 @@
             
             if (vinculoLaboral === 'UNCP') {
                 pdfContainer.classList.remove('hidden');
-                pdfInput.required = true;
+                pdfInput.required = false;
             } else {
                 pdfContainer.classList.add('hidden');
                 pdfInput.required = false;
@@ -1036,7 +1039,7 @@
                             <div><span class="font-medium text-gray-600">Estado:</span><p class="text-gray-800"><span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs font-semibold">${prev.estado || 'Pendiente'}</span></p></div>
                             <div><span class="font-medium text-gray-600">Postulante:</span><p class="text-gray-800">${prev.nombres} ${prev.apellidos}</p></div>
                             <div><span class="font-medium text-gray-600">Email:</span><p class="text-gray-800">${prev.email}</p></div>
-                            <div class="md:col-span-2"><span class="font-medium text-gray-600">DOI:</span><p class="text-gray-800 break-all">${prev.doi}</p></div>
+                            <div class="md:col-span-2"><span class="font-medium text-gray-600">DOI:</span><p class="text-gray-800">${prev.doi}</p></div>
                             <div class="md:col-span-2"><span class="font-medium text-gray-600">Título:</span><p class="text-gray-800">${prev.titulo}</p></div>
                         </div>
                     </div>
@@ -1133,7 +1136,7 @@
                         <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
                             <div class="flex gap-2">
                                 <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1.293-9.293a1 1 0 011.414 0L10 10.586l1.293-1.293a1 1 0 011.414 1.414L11.414 10l1.293 1.293a1 1 0 01-1.414 1.414L10 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L8.586 10l-1.293-1.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                 </svg>
                                 <div class="flex-grow">
                                     <p class="font-bold text-red-900">DOI no encontrado</p>
@@ -1253,11 +1256,8 @@
                         // Si tiene vínculo laboral UNCP, validar que tenga PDF
                         if (vinculoLaboral === 'UNCP') {
                             const pdfFile = document.getElementById(`pdfAutor_${i}`).files[0];
-                            if (!pdfFile) {
-                                alert(`Por favor, cargue el documento de verificación de vínculo con la UNCP para el autor ${i + 1} (UNCP)`);
-                                return;
-                            }
-                            if (pdfFile.size > 10 * 1024 * 1024) {
+                            
+                            if (pdfFile && pdfFile.size > 10 * 1024 * 1024) {
                                 alert(`El PDF del autor ${i + 1} no debe superar 10 MB`);
                                 return;
                             }
