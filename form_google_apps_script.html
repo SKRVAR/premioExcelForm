@@ -52,9 +52,171 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(13, 132, 105, 0.4);
         }
+        
+        .countdown-container {
+            background: transparent;
+            border: none;
+        }
+        
+        .countdown-number {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #1e40af;
+            font-size: 1.75rem;
+        }
+        
+        .countdown-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-top {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        
+        .btn-nav {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-nav:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .btn-nav-primary {
+            background: linear-gradient(135deg, #d4af37 0%, #f0c44d 100%);
+            border: none;
+            color: white;
+        }
+        
+        .btn-nav-primary:hover {
+            background: linear-gradient(135deg, #c09a2a 0%, #d4af37 100%);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, rgba(13, 132, 105, 0.1) 0%, rgba(212, 175, 55, 0.1) 100%);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, rgba(13, 132, 105, 0.8) 0%, rgba(212, 175, 55, 0.8) 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 text-gray-800 flex items-center justify-center min-h-screen p-3 md:p-6">
+
+    <!-- Barra de navegación superior -->
+    <div class="nav-top fixed top-0 left-0 right-0 z-50 py-3">
+        <div class="max-w-4xl mx-auto px-4 md:px-6">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <!-- Botones de navegación -->
+                <div class="flex gap-2">
+                    <a href="index.html" class="btn-nav">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Página Principal
+                    </a>
+                    <a href="./recursos/BasesPrmExcelencia.pdf" target="_blank" class="btn-nav">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Ver Bases
+                    </a>
+                    <a href="index.html#faq" target="_blank" class="btn-nav">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Ayuda/FAQ
+                    </a>
+                </div>
+                
+                <!-- Contador regresivo minimalista -->
+                <div id="countdownContainer" class="countdown-container flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="font-medium hidden md:inline">Cierre en:</span>
+                    </div>
+                    <div id="countdown" class="flex gap-2">
+                        <div class="text-center">
+                            <div id="days" class="countdown-number">--</div>
+                            <div class="countdown-label">Días</div>
+                        </div>
+                        <div class="text-gray-300 countdown-number self-start">:</div>
+                        <div class="text-center">
+                            <div id="hours" class="countdown-number">--</div>
+                            <div class="countdown-label">Hrs</div>
+                        </div>
+                        <div class="text-gray-300 countdown-number self-start">:</div>
+                        <div class="text-center">
+                            <div id="minutes" class="countdown-number">--</div>
+                            <div class="countdown-label">Min</div>
+                        </div>
+                        <div class="text-gray-300 countdown-number self-start">:</div>
+                        <div class="text-center">
+                            <div id="seconds" class="countdown-number">--</div>
+                            <div class="countdown-label">Seg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Espaciador para compensar la barra fija -->
+    <div class="h-20"></div>
 
     <div class="w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 p-4 md:p-6">
         
@@ -62,6 +224,17 @@
         <div class="text-center mb-5 -mx-4 md:-mx-6 -mt-4 md:-mt-6 px-4 py-5 rounded-t-lg border-b-2 border-teal" style="background: #d4af37;">
             <h1 class="title-font text-xl md:text-2xl font-bold text-white tracking-tight">II Premio a la Excelencia Científica UNCP 2025</h1>
             <p class="text-gray-200 mt-1 text-sm font-medium">Formulario de Postulación</p>
+        </div>
+        
+        <!-- Indicador de Progreso -->
+        <div id="progressIndicator" class="mb-6 hidden">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-medium text-gray-600">Progreso de postulación</span>
+                <span id="progressText" class="text-xs font-semibold text-gray-700">Paso 1 de 3</span>
+            </div>
+            <div class="progress-bar h-2">
+                <div id="progressFill" class="progress-fill" style="width: 33.33%"></div>
+            </div>
         </div>
 
         <!-- CONFIGURACIÓN: Cambiar por tu URL del Web App -->
@@ -76,7 +249,15 @@
 
         <!-- SECCIÓN 1: Búsqueda de publicación -->
         <div id="seccionBusqueda" class="mb-6">
-            <h2 class="title-font text-lg font-semibold mb-3 text-gray-800 border-l-4 border-teal pl-3">1. Datos de la Publicación</h2>
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="title-font text-lg font-semibold text-gray-800 border-l-4 border-teal pl-3">1. Datos de la Publicación</h2>
+                <div class="tooltip">
+                    <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="tooltiptext">Ingrese el DOI para obtener automáticamente los datos del artículo. Si no tiene DOI, puede ingresar los datos manualmente.</span>
+                </div>
+            </div>
             
             <!-- Información sobre el DOI -->
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
@@ -174,6 +355,13 @@
                 <div class="flex gap-2 pt-4">
                     <button 
                         type="button"
+                        onclick="if(confirm('¿Está seguro de cancelar? Se perderán los datos ingresados.')) window.location.href='index.html'"
+                        class="bg-red-600 text-white font-medium text-sm px-4 py-2 rounded hover:bg-red-700 transition"
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        type="button"
                         onclick="volverBusqueda()"
                         class="flex-1 bg-gray-700 text-white font-medium text-sm px-4 py-2 rounded hover:bg-gray-800 transition border border-gray-600"
                     >
@@ -192,7 +380,15 @@
 
         <!-- SECCIÓN 3: Autores del Artículo (oculta inicialmente) -->
         <div id="seccionAutores" class="hidden mb-6">
-            <h2 class="title-font text-lg font-semibold mb-3 text-gray-800 border-l-4 border-teal pl-3 border-t pt-4 mt-4">3. Autores del Artículo</h2>
+            <div class="flex items-center justify-between mb-3 border-t pt-4 mt-4">
+                <h2 class="title-font text-lg font-semibold text-gray-800 border-l-4 border-teal pl-3">3. Autores del Artículo</h2>
+                <div class="tooltip">
+                    <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="tooltiptext">Complete la información de cada autor. Al menos un autor debe tener afiliación o vínculo vigente con la UNCP.</span>
+                </div>
+            </div>
             <div class="bg-dark-teal border border-teal rounded p-3 mb-3">
                 <p class="text-xs text-gray-700 mb-2 font-medium">Para cada autor, indique:</p>
                 <ul class="text-xs text-gray-600 ml-4 space-y-1 list-disc">
@@ -211,6 +407,13 @@
         <!-- BOTÓN DE ENVÍO FINAL -->
         <div id="seccionEnvio" class="hidden mb-6">
             <div class="flex gap-2 pt-3 border-t border-gray-200 mt-4">
+                <button 
+                    type="button"
+                    onclick="if(confirm('¿Está seguro de cancelar? Se perderán los datos ingresados.')) window.location.href='index.html'"
+                    class="bg-red-600 text-white font-medium text-sm px-4 py-2 rounded hover:bg-red-700 transition"
+                >
+                    Cancelar
+                </button>
                 <button 
                     type="button"
                     onclick="volverDatosPostulante()"
@@ -364,11 +567,70 @@
         }
 
         /**
+         * Actualiza el contador regresivo y bloquea el formulario si expira
+         */
+        function actualizarContador() {
+            const ahora = new Date();
+            const diferencia = FECHA_LIMITE - ahora;
+            
+            if (diferencia <= 0) {
+                document.getElementById('countdown').innerHTML = '<span class="text-red-600 font-bold text-sm">Plazo finalizado</span>';
+                
+                // Bloquear el formulario inmediatamente
+                if (!document.getElementById('seccionBusqueda').classList.contains('hidden') || 
+                    !document.getElementById('seccionPostulante').classList.contains('hidden') ||
+                    !document.getElementById('seccionAutores').classList.contains('hidden')) {
+                    mostrarFormularioCerrado();
+                }
+                return;
+            }
+            
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = String(dias).padStart(2, '0');
+            document.getElementById('hours').textContent = String(horas).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutos).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(segundos).padStart(2, '0');
+        }
+        
+        /**
+         * Actualiza el indicador de progreso
+         */
+        function actualizarProgreso(paso) {
+            const progressIndicator = document.getElementById('progressIndicator');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressIndicator.classList.remove('hidden');
+            
+            const pasos = {
+                1: { width: '33.33%', text: 'Paso 1 de 3: Datos de la Publicación' },
+                2: { width: '66.66%', text: 'Paso 2 de 3: Datos del Postulante' },
+                3: { width: '100%', text: 'Paso 3 de 3: Autores del Artículo' }
+            };
+            
+            if (pasos[paso]) {
+                progressFill.style.width = pasos[paso].width;
+                progressText.textContent = pasos[paso].text;
+            }
+        }
+
+        /**
          * Inicializa la verificación de fecha límite al cargar la página
          */
         (function inicializarFormulario() {
             if (verificarFechaLimite()) {
                 mostrarFormularioCerrado();
+            } else {
+                // Iniciar contador regresivo
+                actualizarContador();
+                setInterval(actualizarContador, 1000);
+                
+                // Mostrar progreso inicial
+                actualizarProgreso(1);
             }
         })();
 
@@ -1308,6 +1570,7 @@
         window.continuarPostulacion = function() {
             document.getElementById('seccionBusqueda').classList.add('hidden');
             document.getElementById('seccionPostulante').classList.remove('hidden');
+            actualizarProgreso(2);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
@@ -1325,12 +1588,14 @@
             document.getElementById('seccionPostulante').classList.add('hidden');
             document.getElementById('seccionAutores').classList.remove('hidden');
             document.getElementById('seccionEnvio').classList.remove('hidden');
+            actualizarProgreso(3);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         window.volverBusqueda = function() {
             document.getElementById('seccionPostulante').classList.add('hidden');
             document.getElementById('seccionBusqueda').classList.remove('hidden');
+            actualizarProgreso(1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
@@ -1338,6 +1603,7 @@
             document.getElementById('seccionAutores').classList.add('hidden');
             document.getElementById('seccionEnvio').classList.add('hidden');
             document.getElementById('seccionPostulante').classList.remove('hidden');
+            actualizarProgreso(2);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 

@@ -290,6 +290,15 @@ function guardarPDF(base64Data, fileName, carpeta = null) {
  */
 function handleFormSubmission(data) {
   try {
+    // ⚠️ VALIDACIÓN DE FECHA LÍMITE EN EL BACKEND
+    // IMPORTANTE: Actualizar esta fecha cuando se modifique en el frontend
+    const FECHA_LIMITE_BACKEND = new Date(2025, 10, 28, 23, 59, 59); // 28 nov 2025, 23:59:59
+    const ahora = new Date();
+    
+    if (ahora > FECHA_LIMITE_BACKEND) {
+      return createResponse(false, 'El plazo de postulación ha finalizado. No se aceptan más envíos.');
+    }
+    
     const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
     const folderId = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
     const ss = SpreadsheetApp.openById(sheetId);
