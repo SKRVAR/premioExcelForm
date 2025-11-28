@@ -68,6 +68,10 @@
         <script>
             // ⚠️ IMPORTANTE: Reemplaza esta URL con la de tu Google Apps Script Web App
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyp_jsEExL8tpwKsLG9g8LnvcYq5mD_FdesKLGZy8NxQGLpNIyUY_IH6gH3yBZ3ywSK-w/exec';
+            
+            // ⚠️ FECHA LÍMITE DE POSTULACIÓN (Hora de Perú UTC-5)
+            // Formato: Año, Mes (0-11), Día, Hora, Minuto, Segundo
+            const FECHA_LIMITE = new Date(2025, 10, 28, 23, 59, 59); // 28 de noviembre 2025, 23:59:59
         </script>
 
         <!-- SECCIÓN 1: Búsqueda de publicación -->
@@ -102,6 +106,17 @@
                     Obtener Metadatos
                 </button>
             </form>
+
+            <div class="flex justify-end mb-4 -mt-2">
+                <button 
+                    type="button" 
+                    onclick="iniciarIngresoManual()"
+                    class="text-xs text-gray-600 hover:text-amber-700 hover:underline font-medium flex items-center gap-1"
+                >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    ¿No cuenta con un DOI? Ingrese los datos manualmente
+                </button>
+            </div>
 
             <!-- Contenedor de Resultados -->
             <div id="resultado" class="mt-4 space-y-3">
@@ -264,6 +279,98 @@
         // Variable global para almacenar los metadatos completos
         let metadatosPublicacion = null;
         let autoresArticulo = [];
+
+        /**
+         * Verifica si la fecha límite de postulación ha pasado
+         */
+        function verificarFechaLimite() {
+            const ahora = new Date();
+            return ahora > FECHA_LIMITE;
+        }
+
+        /**
+         * Muestra mensaje de formulario cerrado
+         */
+        function mostrarFormularioCerrado() {
+            const fechaFormateada = FECHA_LIMITE.toLocaleDateString('es-PE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // Ocultar todas las secciones del formulario
+            const secciones = ['seccionBusqueda', 'seccionPostulante', 'seccionAutores', 'seccionEnvio'];
+            secciones.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) elemento.classList.add('hidden');
+            });
+
+            // Crear y mostrar mensaje de cierre
+            const contenedor = document.querySelector('.max-w-4xl');
+            if (contenedor) {
+                // Mantener solo el encabezado y agregar el mensaje
+                const encabezado = contenedor.querySelector('.text-center.mb-5');
+                contenedor.innerHTML = '';
+                if (encabezado) contenedor.appendChild(encabezado);
+                
+                const mensajeCierre = document.createElement('div');
+                mensajeCierre.className = 'bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-300 rounded-xl p-6 md:p-8';
+                mensajeCierre.innerHTML = `
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-5">
+                            <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        
+                        <h2 class="title-font text-2xl md:text-3xl font-bold text-red-900 mb-3">Plazo de Postulación Finalizado</h2>
+                        
+                        <p class="text-base text-gray-700 mb-4 leading-relaxed max-w-2xl">
+                            El período de postulación para el <strong>II Premio a la Excelencia Científica UNCP 2025</strong> concluyó el <strong class="text-red-700">${fechaFormateada}</strong>.
+                        </p>
+                        
+                        <div class="bg-white rounded-lg p-5 border border-red-200 mb-5 w-full">
+                            <p class="text-sm text-gray-600 mb-3">
+                                <svg class="w-5 h-5 text-blue-600 inline mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0zM8 8a1 1 0 000 2h6a1 1 0 000-2H8zm0 3a1 1 0 000 2h3a1 1 0 000-2H8z" clip-rule="evenodd"></path>
+                                </svg>
+                                <strong>Agradecemos su interés</strong>
+                            </p>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                Le invitamos a estar atento a futuras convocatorias del Premio a la Excelencia Científica de la Universidad Nacional del Centro del Perú.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200 w-full">
+                            <p class="text-xs text-blue-900 font-medium mb-2">Para más información, puede contactar a:</p>
+                            <p class="text-sm text-blue-800">
+                                <strong>Instituto General de Investigación - UNCP</strong><br>
+                                Email: <a href="mailto:investigacion@uncp.edu.pe" class="hover:underline font-medium">investigacion@uncp.edu.pe</a>
+                            </p>
+                        </div>
+                        
+                        <a href="index.html" class="mt-6 inline-flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-lg transition-all btn-gold">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Volver a la página principal
+                        </a>
+                    </div>
+                `;
+                contenedor.appendChild(mensajeCierre);
+            }
+        }
+
+        /**
+         * Inicializa la verificación de fecha límite al cargar la página
+         */
+        (function inicializarFormulario() {
+            if (verificarFechaLimite()) {
+                mostrarFormularioCerrado();
+            }
+        })();
 
         /**
          * Muestra el modal de progreso
@@ -868,7 +975,14 @@
         /**
          * Muestra formulario para ingreso manual
          */
-        function mostrarFormularioManual(doi) {
+        function mostrarFormularioManual(doi, allowEdit = false) {
+            const readonlyAttr = allowEdit ? '' : 'readonly';
+            const bgClass = allowEdit ? 'bg-white focus:ring-2 focus:ring-amber-500' : 'bg-gray-50';
+            const title = allowEdit ? 'Ingreso Manual de Datos' : 'No se pudieron obtener metadatos automáticamente';
+            const message = allowEdit 
+                ? 'Por favor, complete los datos de su publicación manualmente.' 
+                : 'El DOI no se encontró en Crossref, DataCite ni OpenAlex. Por favor, ingrese manualmente los datos:';
+
             return `
                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg mb-4">
                     <div class="flex gap-2 mb-3">
@@ -876,16 +990,17 @@
                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                         </svg>
                         <div class="flex-grow">
-                            <h3 class="font-bold text-amber-900 mb-1">No se pudieron obtener metadatos automáticamente</h3>
-                            <p class="text-sm text-amber-800 mb-2">El DOI no se encontró en Crossref, DataCite ni OpenAlex. Por favor, ingrese manualmente los datos:</p>
+                            <h3 class="font-bold text-amber-900 mb-1">${title}</h3>
+                            <p class="text-sm text-amber-800 mb-2">${message}</p>
                         </div>
                     </div>
                 </div>
                 
                 <form id="formManual" class="space-y-3 bg-white border-2 border-gray-300 rounded-lg p-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">DOI *</label>
-                        <input type="text" id="manualDOI" value="${doi}" readonly class="w-full px-3 py-2 text-sm border border-gray-300 rounded bg-gray-50">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">DOI ${allowEdit ? '(Opcional)' : '*'}</label>
+                        <input type="text" id="manualDOI" value="${doi}" ${readonlyAttr} class="w-full px-3 py-2 text-sm border border-gray-300 rounded ${bgClass}" placeholder="${allowEdit ? 'Dejar en blanco si no tiene DOI' : ''}">
+                        ${allowEdit ? '<p class="text-xs text-gray-500 mt-1">Si no cuenta con DOI, puede dejar este campo en blanco o ingresar otro identificador.</p>' : ''}
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Título del Artículo *</label>
@@ -912,7 +1027,7 @@
                     </div>
                     <div class="flex gap-2 pt-2">
                         <button type="button" onclick="location.reload()" class="flex-1 bg-gray-700 text-white font-medium px-4 py-2 text-sm rounded hover:bg-gray-800 transition">
-                            Buscar otro DOI
+                            Cancelar
                         </button>
                         <button type="submit" class="flex-1 btn-gold text-white font-semibold px-4 py-2 text-sm rounded">
                             Usar estos datos
@@ -925,50 +1040,66 @@
         /**
          * Procesa datos manuales
          */
-        function procesarDatosManual(doi) {
-            const form = document.getElementById('formManual');
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
+        function procesarDatosManual(doiOriginal) {
+            // Esperar a que el DOM esté listo
+            setTimeout(() => {
+                const form = document.getElementById('formManual');
+                if (!form) {
+                    console.error('Formulario manual no encontrado');
+                    return;
+                }
                 
-                const titulo = document.getElementById('manualTitulo').value.trim();
-                const autoresTexto = document.getElementById('manualAutores').value.trim();
-                const revista = document.getElementById('manualRevista').value.trim();
-                const editorial = document.getElementById('manualEditorial').value.trim();
-                const anio = document.getElementById('manualAnio').value.trim();
+                // Remover listeners anteriores clonando el elemento
+                const newForm = form.cloneNode(true);
+                form.parentNode.replaceChild(newForm, form);
                 
-                const autoresLineas = autoresTexto.split('\n').filter(line => line.trim());
-                const autores = autoresLineas.map(linea => {
-                    const partes = linea.trim().split(' ');
-                    return {
-                        given: partes.slice(0, -1).join(' ') || '',
-                        family: partes[partes.length - 1] || linea.trim()
+                newForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    const titulo = document.getElementById('manualTitulo').value.trim();
+                    const autoresTexto = document.getElementById('manualAutores').value.trim();
+                    const revista = document.getElementById('manualRevista').value.trim();
+                    const editorial = document.getElementById('manualEditorial').value.trim();
+                    const anio = document.getElementById('manualAnio').value.trim();
+                    
+                    // Obtener DOI del input si es editable, o usar el original, o 'S/N'
+                    const doiInput = document.getElementById('manualDOI');
+                    const doiFinal = (doiInput && doiInput.value.trim()) ? doiInput.value.trim() : (doiOriginal || 'S/N');
+
+                    const autoresLineas = autoresTexto.split('\n').filter(line => line.trim());
+                    const autores = autoresLineas.map(linea => {
+                        const partes = linea.trim().split(' ');
+                        return {
+                            given: partes.slice(0, -1).join(' ') || '',
+                            family: partes[partes.length - 1] || linea.trim()
+                        };
+                    });
+                    
+                    const metadata = {
+                        titulo: titulo,
+                        autores: autores,
+                        revista: revista,
+                        editorial: editorial,
+                        fecha: anio,
+                        doi: doiFinal,
+                        tipo: 'article',
+                        metadatosOriginales: {
+                            source: 'manual',
+                            title: [titulo],
+                            author: autores,
+                            'container-title': [revista],
+                            publisher: editorial,
+                            DOI: doiFinal,
+                            published: { 'date-parts': [[parseInt(anio)]] }
+                        }
                     };
+                    
+                    metadatosPublicacion = metadata.metadatosOriginales;
+                    autoresArticulo = autores;
+                    
+                    verificarDuplicadoYMostrarResultado(doiFinal, titulo, metadata, 'Ingreso Manual');
                 });
-                
-                const metadata = {
-                    titulo: titulo,
-                    autores: autores,
-                    revista: revista,
-                    editorial: editorial,
-                    fecha: anio,
-                    doi: doi,
-                    tipo: 'article',
-                    metadatosOriginales: {
-                        source: 'manual',
-                        title: [titulo],
-                        author: autores,
-                        'container-title': [revista],
-                        publisher: editorial,
-                        DOI: doi,
-                        published: { 'date-parts': [[parseInt(anio)]] }
-                    }
-                };
-                
-                metadatosPublicacion = metadata.metadatosOriginales;
-                autoresArticulo = autores;
-                
-                verificarDuplicadoYMostrarResultado(doi, titulo, metadata, 'Ingreso Manual');
-            });
+            }, 100);
         }
 
         /**
@@ -1089,10 +1220,15 @@
             `;
         }
 
-        window.mostrarFormularioManualDirecto = function(doi) {
+        window.mostrarFormularioManualDirecto = function(doi = '') {
             const resultadoDiv = document.getElementById('resultado');
-            resultadoDiv.innerHTML = mostrarFormularioManual(doi);
+            const allowEdit = !doi; // Si no hay DOI, permitir edición
+            resultadoDiv.innerHTML = mostrarFormularioManual(doi, allowEdit);
             procesarDatosManual(doi);
+        };
+
+        window.iniciarIngresoManual = function() {
+            mostrarFormularioManualDirecto('');
         };
 
         // ==================================================================
@@ -1221,6 +1357,13 @@
 
         // Manejo del envío de postulación
         window.enviarPostulacion = async function() {
+            // Verificar fecha límite antes de enviar
+            if (verificarFechaLimite()) {
+                alert('Lo sentimos, el plazo de postulación ha finalizado.');
+                mostrarFormularioCerrado();
+                return;
+            }
+            
             const btnEnviar = document.getElementById('btnEnviar');
             
             try {

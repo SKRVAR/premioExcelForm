@@ -113,7 +113,10 @@ function doGet(e) {
 // ============================================
 
 /**
- * Verifica si un DOI ya ha sido registrado previamente
+ * Verifica si un DOI o título ya ha sido registrado previamente
+ * LÓGICA: Se considera duplicado si:
+ * - El DOI coincide (y no es "S/N" o vacío), O
+ * - El título coincide (normalizado, sin importar mayúsculas/espacios)
  */
 function checkDuplicateDOI(data) {
   try {
@@ -121,26 +124,49 @@ function checkDuplicateDOI(data) {
     const ss = SpreadsheetApp.openById(sheetId);
     const sheet = ss.getActiveSheet();
     
-    const doi = data.doi;
-    const titulo = data.titulo;
+    const doi = data.doi || '';
+    const titulo = data.titulo || '';
+    
+    // Normalizar DOI y título para comparación
+    const doiNormalizado = doi.toLowerCase().trim();
+    const tituloNormalizado = normalizarTexto(titulo);
     
     // Obtener todos los datos de la hoja
     const dataRange = sheet.getDataRange();
     const values = dataRange.getValues();
     
-    // Buscar DOI duplicado (columna H = índice 7, con ID y columnas DJ)
+    // Buscar duplicados (columna H = índice 7 para DOI, columna I = índice 8 para Título)
     // Empezar desde la fila 2 (índice 1) para saltar encabezados
     for (let i = 1; i < values.length; i++) {
-      const rowDOI = values[i][7]; // Columna DOI (índice 7)
-      const rowTitulo = values[i][8]; // Columna Título (índice 8)
+      const rowDOI = (values[i][7] || '').toString().toLowerCase().trim();
+      const rowTitulo = (values[i][8] || '').toString();
+      const rowTituloNormalizado = normalizarTexto(rowTitulo);
       
-      // Verificar si el DOI coincide o el título es muy similar
-      if (rowDOI && (rowDOI.toLowerCase() === doi.toLowerCase() || 
-          (rowTitulo && rowTitulo.toLowerCase() === titulo.toLowerCase()))) {
-        
+      let esDuplicado = false;
+      let motivoDuplicado = '';
+      
+      // Verificar duplicado por DOI (solo si el DOI no es "S/N" o vacío)
+      if (doiNormalizado && doiNormalizado !== 's/n' && doiNormalizado !== 'sin' && 
+          rowDOI && rowDOI !== 's/n' && rowDOI !== 'sin') {
+        if (rowDOI === doiNormalizado) {
+          esDuplicado = true;
+          motivoDuplicado = 'DOI coincidente';
+        }
+      }
+      
+      // Verificar duplicado por título (si los títulos normalizados coinciden)
+      if (!esDuplicado && tituloNormalizado && rowTituloNormalizado) {
+        if (tituloNormalizado === rowTituloNormalizado) {
+          esDuplicado = true;
+          motivoDuplicado = 'Título coincidente';
+        }
+      }
+      
+      if (esDuplicado) {
         // Encontrado duplicado - devolver datos del postulante previo
-        return createResponse(false, 'Este artículo ya ha sido postulado', {
+        return createResponse(false, 'Este artículo ya ha sido postulado (' + motivoDuplicado + ')', {
           isDuplicate: true,
+          motivo: motivoDuplicado,
           postulacionPrevia: {
             id: values[i][0], // ID postulación
             fecha: values[i][1], // Fecha postulación
@@ -157,7 +183,7 @@ function checkDuplicateDOI(data) {
     }
     
     // No se encontró duplicado
-    return createResponse(true, 'DOI disponible para postular', {
+    return createResponse(true, 'Artículo disponible para postular', {
       isDuplicate: false
     });
     
@@ -165,6 +191,30 @@ function checkDuplicateDOI(data) {
     Logger.log('Error al verificar duplicado: ' + error.toString());
     return createResponse(false, 'Error al verificar duplicado: ' + error.toString());
   }
+}
+
+/**
+ * Normaliza un texto para comparación:
+ * - Convierte a minúsculas
+ * - Elimina espacios múltiples y espacios al inicio/final
+ * - Elimina signos de puntuación comunes
+ * - Elimina tildes/acentos
+ */
+function normalizarTexto(texto) {
+  if (!texto) return '';
+  
+  return texto
+    .toString()
+    .toLowerCase()
+    .trim()
+    // Remover tildes/acentos
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    // Remover puntuación común
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
+    // Reemplazar múltiples espacios por uno solo
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // ============================================
