@@ -151,6 +151,37 @@
             visibility: visible;
             opacity: 1;
         }
+        
+        /* Banner de ampliación excepcional */
+        .banner-extension {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            animation: slideDown 0.5s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .pulse-icon {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 text-gray-800 flex items-center justify-center min-h-screen p-3 md:p-6">
@@ -226,6 +257,25 @@
             <p class="text-gray-200 mt-1 text-sm font-medium">Formulario de Postulación</p>
         </div>
         
+        <!-- Banner de Ampliación Excepcional -->
+        <div class="banner-extension rounded-lg p-3 mb-5 shadow-sm">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-amber-600 pulse-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="flex-grow">
+                    <p class="text-sm font-bold text-amber-900 mb-1 flex items-center gap-2">
+                        <span>🎉 ¡AMPLIACIÓN EXCEPCIONAL!</span>
+                    </p>
+                    <p class="text-xs text-amber-800 leading-relaxed">
+                        El plazo para presentar postulaciones se ha <strong>extendido hasta el 30 de noviembre de 2025 a las 23:59 horas (hora de Perú)</strong>. ¡Aún estás a tiempo de participar!
+                    </p>
+                </div>
+            </div>
+        </div>
+        
         <!-- Indicador de Progreso -->
         <div id="progressIndicator" class="mb-6 hidden">
             <div class="flex justify-between items-center mb-2">
@@ -244,7 +294,7 @@
             
             // ⚠️ FECHA LÍMITE DE POSTULACIÓN (Hora de Perú UTC-5)
             // Formato: Año, Mes (0-11), Día, Hora, Minuto, Segundo
-            const FECHA_LIMITE = new Date(2025, 10, 28, 23, 59, 59); // 28 de noviembre 2025, 23:59:59
+            const FECHA_LIMITE = new Date(2025, 10, 30, 23, 59, 59); // 30 de noviembre 2025, 23:59:59 - AMPLIACIÓN EXCEPCIONAL
         </script>
 
         <!-- SECCIÓN 1: Búsqueda de publicación -->

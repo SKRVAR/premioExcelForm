@@ -292,7 +292,7 @@ function handleFormSubmission(data) {
   try {
     // ⚠️ VALIDACIÓN DE FECHA LÍMITE EN EL BACKEND
     // IMPORTANTE: Actualizar esta fecha cuando se modifique en el frontend
-    const FECHA_LIMITE_BACKEND = new Date(2025, 10, 28, 23, 59, 59); // 28 nov 2025, 23:59:59
+    const FECHA_LIMITE_BACKEND = new Date(2025, 10, 30, 23, 59, 59); // 30 nov 2025, 23:59:59 - AMPLIACIÓN EXCEPCIONAL
     const ahora = new Date();
     
     if (ahora > FECHA_LIMITE_BACKEND) {
