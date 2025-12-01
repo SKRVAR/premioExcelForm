@@ -178,6 +178,90 @@
     </style>
 </head>
 <body class="bg-gray-50 text-gray-700">
+    <!-- Modal Overlay - Flyer de Nueva Publicación -->
+    <div id="modalFlyer" class="fixed inset-0 z-[100] flex items-center justify-center p-4 transition-opacity duration-500" style="opacity: 0; pointer-events: none;">
+        <!-- Fondo oscuro con blur - Mayor transparencia -->
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="cerrarFlyer()"></div>
+        
+        <!-- Contenido del Flyer -->
+        <div class="relative max-w-lg w-full transform transition-all duration-500 scale-90" id="flyerContent">
+            <!-- Tarjeta principal del flyer -->
+            <div class="bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 rounded-2xl shadow-2xl overflow-hidden border-2 border-yellow-500/60 backdrop-blur-sm">
+                
+                <!-- Header decorativo -->
+                <div class="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 py-3 px-4 text-center">
+                    <p class="text-black text-sm tracking-widest uppercase" style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.15em;">
+                        II Premio a la Excelencia Científica UNCP 2025
+                    </p>
+                </div>
+                
+                <!-- Cuerpo del flyer -->
+                <div class="p-8 text-center">
+                    <!-- Badge de nuevo -->
+                    <div class="inline-flex items-center px-5 py-2 rounded-full bg-green-600/90 text-white text-sm font-bold mb-6 shadow-lg" style="font-family: 'Montserrat', sans-serif; letter-spacing: 0.1em;">
+                        NUEVA PUBLICACIÓN
+                    </div>
+                    
+                    <!-- Ícono principal - Diseño minimalista -->
+                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-green-600 to-green-800 rounded-xl flex items-center justify-center shadow-xl border-2 border-green-400/40" style="background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    
+                    <!-- Título del documento -->
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2" style="font-family: 'Playfair Display', serif;">
+                        Acta de Conformación
+                    </h2>
+                    <h3 class="text-xl md:text-2xl font-semibold text-yellow-400 mb-5" style="font-family: 'Playfair Display', serif;">
+                        del Comité Evaluador
+                    </h3>
+                    
+                    <!-- Fecha -->
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-gray-300 text-sm mb-5" style="font-family: 'Montserrat', sans-serif;">
+                        <span>Publicado el</span>
+                        <span class="text-white font-semibold">01 de Diciembre de 2025</span>
+                    </div>
+                    
+                    <!-- Descripción -->
+                    <p class="text-gray-300 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed" style="font-family: 'Poppins', sans-serif;">
+                        Documento oficial firmado por el <span class="text-white font-medium">Director del Instituto de Investigación de la UNCP</span> que establece la conformación del comité encargado de evaluar las postulaciones.
+                    </p>
+                    
+                    <!-- Botones de acción -->
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <a href="./recursos/actaComiteFirma.pdf" target="_blank" 
+                           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-xl font-semibold text-base hover:from-green-500 hover:to-green-600 transition-all shadow-lg border border-green-400/40"
+                           style="font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
+                            Ver Documento
+                        </a>
+                        <button onclick="cerrarFlyer()" 
+                                class="inline-flex items-center justify-center gap-2 bg-white/10 text-white px-6 py-3 rounded-xl font-semibold text-base hover:bg-white/20 transition-all border border-white/20"
+                                style="font-family: 'Montserrat', sans-serif;">
+                            Continuar a la página
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Footer decorativo -->
+                <div class="bg-black/20 py-3 px-4 text-center border-t border-white/10">
+                    <p class="text-xs text-gray-400" style="font-family: 'Poppins', sans-serif;">
+                        Instituto de Investigación · Vicerrectorado de Investigación UNCP
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Botón de cerrar flotante -->
+            <button onclick="cerrarFlyer()" 
+                    class="absolute -top-3 -right-3 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:bg-red-500 hover:text-white transition-all border-2 border-gray-200 hover:border-red-500"
+                    title="Cerrar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Header con Navbar -->
     <header class="header-gradient text-white py-4 sticky top-0 z-50 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -194,6 +278,7 @@
                 <button data-tab="objetivo" class="nav-tab hover:opacity-80 transition text-sm font-medium">Objetivo</button>
                 <button data-tab="requisitos" class="nav-tab hover:opacity-80 transition text-sm font-medium">Requisitos</button>
                 <button data-tab="cronograma" class="nav-tab hover:opacity-80 transition text-sm font-medium">Cronograma</button>
+                <button data-tab="documentos" class="nav-tab hover:opacity-80 transition text-sm font-medium">📋 Documentos</button>
                 <button data-tab="faq" class="nav-tab hover:opacity-80 transition text-sm font-medium">FAQ</button>
                 <a href="form_google_apps_script.html" target="_blank" class="btn-primary text-xs px-4 py-2 rounded">Postular</a>
             </nav>
@@ -273,6 +358,7 @@
             <button class="tab-button active" data-tab="objetivo"> Objetivo</button>
             <button class="tab-button" data-tab="requisitos"> Requisitos</button>
             <button class="tab-button" data-tab="cronograma"> Cronograma</button>
+            <button class="tab-button" data-tab="documentos">📋 Documentos</button>
             <button class="tab-button" data-tab="faq"> FAQ</button>
         </div>
     </div>
@@ -440,6 +526,75 @@
                 </div>
         </div>
             
+        <!-- Pestaña: Documentos Oficiales -->
+        <div id="documentos" class="tab-content">
+            <h3 class="section-title mb-8 text-center">📋 Documentos Oficiales</h3>
+            <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">Actas y documentos oficiales del II Premio a la Excelencia Científica UNCP 2025, publicados en orden cronológico.</p>
+            
+            <div class="space-y-6 max-w-3xl mx-auto">
+                <!-- Acta 1: Conformación del Comité -->
+                <div class="bg-white p-6 rounded-xl border-2 border-green-600 shadow-lg hover:shadow-xl transition">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center text-white text-2xl flex-shrink-0" style="background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
+                            📄
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">✅ Publicado</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-800 mb-1">Acta de Conformación del Comité Evaluador</h4>
+                            <p class="text-sm text-gray-500 font-semibold mb-3">📅 01 de Diciembre de 2025</p>
+                            <p class="text-gray-600 mb-4">Documento oficial que establece la conformación del comité encargado de evaluar las postulaciones al premio, firmado por el Director del Instituto de Investigación de la UNCP.</p>
+                            <a href="./recursos/actaComiteFirma.pdf" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition" style="background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
+                                <span>📥</span> Ver / Descargar PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Acta 2: Elegibilidad (Próximamente) -->
+                <div class="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300 opacity-75">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-gray-400 to-gray-500 rounded-lg flex items-center justify-center text-white text-2xl flex-shrink-0">
+                            📄
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">🔜 Próximamente</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-600 mb-1">Acta de Elegibilidad de Postulantes</h4>
+                            <p class="text-sm text-gray-400 font-semibold mb-3">📅 Pendiente de publicación</p>
+                            <p class="text-gray-500">Lista oficial de postulantes que cumplen con los requisitos establecidos en las bases del concurso.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Acta 3: Resultados Finales (Próximamente) -->
+                <div class="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300 opacity-75">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-gray-400 to-gray-500 rounded-lg flex items-center justify-center text-white text-2xl flex-shrink-0">
+                            🏆
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">🔜 Próximamente</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-600 mb-1">Acta de Resultados Finales</h4>
+                            <p class="text-sm text-gray-400 font-semibold mb-3">📅 Pendiente de publicación</p>
+                            <p class="text-gray-500">Resultados finales con la lista de ganadores del II Premio a la Excelencia Científica UNCP 2025.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Enlace a página completa -->
+            <div class="text-center mt-10">
+                <a href="./documentos.html" class="inline-flex items-center gap-2 text-green-700 hover:text-green-800 font-semibold transition hover:underline">
+                    Ver página completa de documentos →
+                </a>
+            </div>
+        </div>
+
         <!-- Pestaña: FAQ -->
         <div id="faq" class="tab-content">
             <h3 class="section-title mb-8 text-center">Preguntas Frecuentes</h3>
@@ -616,6 +771,7 @@
                     <ul class="space-y-2 text-sm">
                         <li><a href="./recursos/BasesPrmExcelencia.pdf" target="_blank" class="hover:text-white transition">📄 Bases del Concurso (PDF)</a></li>
                         <li><a href="./recursos/anexoIII_prmExcelencia.docx" download class="hover:text-white transition">📋 Anexo 03 - Declaración Jurada</a></li>
+                        <li><a href="./documentos.html" class="hover:text-white transition">📋 Documentos Oficiales</a></li>
                     </ul>
                 </div>
                 
@@ -702,6 +858,58 @@
                         setTimeout(() => element.classList.remove('ring-2', 'ring-yellow-400'), 2000);
                     }
                 }, 300);
+            }
+            
+            // Mostrar flyer de notificación después de cargar
+            mostrarFlyer();
+        });
+
+        // Sistema de Flyer Modal de Notificación
+        function mostrarFlyer() {
+            const modal = document.getElementById('modalFlyer');
+            const flyerContent = document.getElementById('flyerContent');
+            const flyerVisto = localStorage.getItem('flyerActaComite_visto');
+            
+            // Solo mostrar si no fue visto previamente (o si pasaron más de 24 horas)
+            if (!flyerVisto || (Date.now() - parseInt(flyerVisto)) > 24 * 60 * 60 * 1000) {
+                // Bloquear scroll del body
+                document.body.style.overflow = 'hidden';
+                
+                setTimeout(() => {
+                    modal.style.opacity = '1';
+                    modal.style.pointerEvents = 'auto';
+                    flyerContent.classList.remove('scale-90');
+                    flyerContent.classList.add('scale-100');
+                }, 300);
+            }
+        }
+
+        function cerrarFlyer() {
+            const modal = document.getElementById('modalFlyer');
+            const flyerContent = document.getElementById('flyerContent');
+            
+            // Animación de salida
+            flyerContent.classList.remove('scale-100');
+            flyerContent.classList.add('scale-90');
+            modal.style.opacity = '0';
+            
+            setTimeout(() => {
+                modal.style.pointerEvents = 'none';
+                // Restaurar scroll del body
+                document.body.style.overflow = '';
+            }, 500);
+            
+            // Guardar que el usuario vio el flyer
+            localStorage.setItem('flyerActaComite_visto', Date.now().toString());
+        }
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('modalFlyer');
+                if (modal.style.opacity === '1') {
+                    cerrarFlyer();
+                }
             }
         });
     </script>
