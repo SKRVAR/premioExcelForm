@@ -868,20 +868,16 @@
         function mostrarFlyer() {
             const modal = document.getElementById('modalFlyer');
             const flyerContent = document.getElementById('flyerContent');
-            const flyerVisto = localStorage.getItem('flyerActaComite_visto');
             
-            // Solo mostrar si no fue visto previamente (o si pasaron más de 24 horas)
-            if (!flyerVisto || (Date.now() - parseInt(flyerVisto)) > 24 * 60 * 60 * 1000) {
-                // Bloquear scroll del body
-                document.body.style.overflow = 'hidden';
-                
-                setTimeout(() => {
-                    modal.style.opacity = '1';
-                    modal.style.pointerEvents = 'auto';
-                    flyerContent.classList.remove('scale-90');
-                    flyerContent.classList.add('scale-100');
-                }, 300);
-            }
+            // Bloquear scroll del body
+            document.body.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.style.pointerEvents = 'auto';
+                flyerContent.classList.remove('scale-90');
+                flyerContent.classList.add('scale-100');
+            }, 300);
         }
 
         function cerrarFlyer() {
@@ -898,9 +894,6 @@
                 // Restaurar scroll del body
                 document.body.style.overflow = '';
             }, 500);
-            
-            // Guardar que el usuario vio el flyer
-            localStorage.setItem('flyerActaComite_visto', Date.now().toString());
         }
 
         // Cerrar con tecla ESC
