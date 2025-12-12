@@ -198,42 +198,42 @@
                 <!-- Cuerpo del flyer -->
                 <div class="p-8 text-center">
                     <!-- Badge de nuevo -->
-                    <div class="inline-flex items-center px-5 py-2 rounded-full bg-green-600/90 text-white text-sm font-bold mb-6 shadow-lg" style="font-family: 'Montserrat', sans-serif; letter-spacing: 0.1em;">
-                        NUEVA PUBLICACIÓN
+                    <div class="inline-flex items-center px-5 py-2 rounded-full bg-yellow-500/90 text-black text-sm font-bold mb-6 shadow-lg" style="font-family: 'Montserrat', sans-serif; letter-spacing: 0.1em;">
+                        RESULTADOS FINALES
                     </div>
                     
                     <!-- Ícono principal - Diseño minimalista -->
-                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-green-600 to-green-800 rounded-xl flex items-center justify-center shadow-xl border-2 border-green-400/40" style="background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
+                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-xl border-2 border-yellow-400/40">
                         <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
                         </svg>
                     </div>
                     
                     <!-- Título del documento -->
                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-2" style="font-family: 'Playfair Display', serif;">
-                        Acta de Elegibilidad
+                        Acta de Resultados
                     </h2>
                     <h3 class="text-xl md:text-2xl font-semibold text-yellow-400 mb-5" style="font-family: 'Playfair Display', serif;">
-                        de Postulantes
+                        Finales
                     </h3>
                     
                     <!-- Fecha -->
                     <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-gray-300 text-sm mb-5" style="font-family: 'Montserrat', sans-serif;">
                         <span>Publicado el</span>
-                        <span class="text-white font-semibold">04 de Diciembre de 2025</span>
+                        <span class="text-white font-semibold">12 de Diciembre de 2025</span>
                     </div>
                     
                     <!-- Descripción -->
                     <p class="text-gray-300 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed" style="font-family: 'Poppins', sans-serif;">
-                        Lista oficial de postulantes que cumplen con los requisitos mínimos establecidos en las bases del concurso, verificados por el <span class="text-white font-medium">Comité Evaluador del II Premio a la Excelencia Científica UNCP 2025</span>.
+                        Lista oficial de <span class="text-yellow-400 font-medium">ganadores del II Premio a la Excelencia Científica UNCP 2025</span>, con los puntajes finales obtenidos en el proceso de evaluación.
                     </p>
                     
                     <!-- Botones de acción -->
                     <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                        <a href="./recursos/actaElegibPostFirma_FirmAll.pdf" target="_blank" 
-                           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-xl font-semibold text-base hover:from-green-500 hover:to-green-600 transition-all shadow-lg border border-green-400/40"
-                           style="font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #0d8469 0%, #065e50 100%);">
-                            Ver Documento
+                        <a href="./recursos/actaResFnl_FirmAll.pdf" target="_blank" 
+                           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-6 py-3 rounded-xl font-semibold text-base hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg border border-yellow-400/40"
+                           style="font-family: 'Montserrat', sans-serif;">
+                            Ver Resultados
                         </a>
                         <button onclick="cerrarFlyer()" 
                                 class="inline-flex items-center justify-center gap-2 bg-white/10 text-white px-6 py-3 rounded-xl font-semibold text-base hover:bg-white/20 transition-all border border-white/20"
@@ -574,19 +574,24 @@
                     </div>
                 </div>
                 
-                <!-- Acta 3: Resultados Finales (Próximamente) -->
-                <div class="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300 opacity-75">
+                <!-- Acta 3: Resultados Finales (PUBLICADO) -->
+                <div class="bg-white p-6 rounded-xl border-2 border-yellow-500 shadow-lg hover:shadow-xl transition">
                     <div class="flex items-start gap-4">
-                        <div class="w-14 h-14 bg-gradient-to-br from-gray-400 to-gray-500 rounded-lg flex items-center justify-center text-white text-2xl flex-shrink-0">
-                            🏆
+                        <div class="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                            </svg>
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">🔜 Próximamente</span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Publicado</span>
                             </div>
-                            <h4 class="text-xl font-bold text-gray-600 mb-1">Acta de Resultados Finales</h4>
-                            <p class="text-sm text-gray-400 font-semibold mb-3">📅 Pendiente de publicación</p>
-                            <p class="text-gray-500">Resultados finales con la lista de ganadores del II Premio a la Excelencia Científica UNCP 2025.</p>
+                            <h4 class="text-xl font-bold text-gray-800 mb-1">Acta de Resultados Finales</h4>
+                            <p class="text-sm text-gray-500 font-semibold mb-3">12 de Diciembre de 2025</p>
+                            <p class="text-gray-600 mb-4">Lista oficial de ganadores del II Premio a la Excelencia Científica UNCP 2025 con los puntajes finales obtenidos.</p>
+                            <a href="./recursos/actaResFnl_FirmAll.pdf" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black px-4 py-2 rounded-lg font-semibold hover:from-yellow-400 hover:to-yellow-500 transition">
+                                Ver / Descargar PDF
+                            </a>
                         </div>
                     </div>
                 </div>
